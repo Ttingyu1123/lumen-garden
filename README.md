@@ -1,6 +1,7 @@
 # ✨ 星光庭園 Lumen Garden
 
-**🎮 線上遊玩：<https://ttingyu1123.github.io/lumen-garden/>**
+**🎮 線上遊玩：<https://game-zombie.tingyudeco.com/>**
+（備用網址：<https://ttingyu1123.github.io/lumen-garden/>）
 
 一款玩法靈感來自《植物大戰殭屍》的**原創** 2D 橫向塔防遊戲。
 所有角色、命名與美術均為原創，未使用任何官方素材。
