@@ -1,6 +1,8 @@
 /* ============================================================
    units.js — 防禦單位系統
    放置、行為（生產 / 射擊 / 純擋路）、受擊與死亡。
+   射手（thorn / frost）共用 shooter 路徑，差異全在
+   config 的 projectile 規格。
    ============================================================ */
 
 const Units = {
@@ -37,15 +39,19 @@ const Units = {
       hp: def.hp,
       maxHp: def.hp,
       timer: 0,   // 生產 / 射擊共用計時器
+      age: 0,     // 放置後經過秒數（供彈出動畫）
     };
     G.grid[row][col] = unit;
     G.units.push(unit);
     G.cardReadyAt[typeId] = G.time + def.cooldown;
+    Sfx.play('place');
     return { ok: true };
   },
 
   update(dt) {
     for (const u of G.units) {
+      u.age += dt;
+
       if (u.def.type === 'producer') {
         // 定期生產光珠
         u.timer += dt;
@@ -64,7 +70,8 @@ const Units = {
           u.timer += dt;
           if (u.timer >= u.def.fireInterval) {
             u.timer = 0;
-            Projectiles.spawn(u.row, c.x + 20, c.y - 10, u.def.damage, u.def.projectileSpeed);
+            Projectiles.spawn(u.row, c.x + 20, c.y - 10, u.def.projectile);
+            Sfx.play(u.def.sfx || 'shoot');
           }
         } else {
           u.timer = Math.min(u.timer, u.def.fireInterval); // 沒目標時保持蓄力上限

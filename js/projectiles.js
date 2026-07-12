@@ -1,19 +1,29 @@
 /* ============================================================
-   projectiles.js — 投射物（棘刺）
+   projectiles.js — 投射物
    由射手發射，向右直飛，命中同列第一個接觸到的敵人。
+   spec 由單位資料表的 projectile 欄位提供：
+   { damage, speed, color, slow? }
    ============================================================ */
 
 const Projectiles = {
 
   /** 從某格中心發射一發 */
-  spawn(row, x, y, damage, speed) {
-    G.projectiles.push({ row, x, y, damage, speed });
+  spawn(row, x, y, spec) {
+    G.projectiles.push({
+      row, x, y,
+      damage: spec.damage,
+      speed: spec.speed,
+      slow: spec.slow || 0,
+      color: spec.color || '#b6ff7a',
+      age: 0,               // 供渲染做飄浮動畫
+    });
   },
 
   update(dt) {
     for (let i = G.projectiles.length - 1; i >= 0; i--) {
       const p = G.projectiles[i];
       p.x += p.speed * dt;
+      p.age += dt;
 
       // 飛出畫面就移除
       if (p.x > CONFIG.CANVAS_W + 40) {
@@ -32,7 +42,7 @@ const Projectiles = {
       }
 
       if (hit) {
-        Enemies.damage(hit, p.damage);
+        Enemies.damage(hit, p.damage, { slow: p.slow });
         G.projectiles.splice(i, 1);
       }
     }

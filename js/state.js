@@ -5,6 +5,7 @@
 
 const G = {
   phase: 'start',   // 'start' | 'playing' | 'win' | 'lose'
+  paused: false,    // 暫停中（僅 playing 階段有意義）
   time: 0,          // 遊戲內累計秒數（不用 Date.now，切頁暫停不會跳波）
 
   lux: 0,           // 目前光能
@@ -60,5 +61,6 @@ function resetGame() {
   };
 
   G.skyOrbTimer = 0;
+  G.paused = false;
   G.phase = 'playing';
 }

@@ -18,6 +18,7 @@ const Waves = {
     }));
     const isFinal = index === WAVES.length - 1;
     UI.showBanner(isFinal ? '最終波來襲！！' : `第 ${index + 1} 波來襲！`);
+    Sfx.play('wave');
     UI.updateHUD();
   },
 
@@ -63,5 +64,21 @@ const Waves = {
     const w = G.wave;
     if (w.index === -1) return '準備中…';
     return `第 ${w.index + 1} / ${WAVES.length} 波`;
+  },
+
+  /**
+   * 倒數顯示：開場準備時間 / 波間空檔時回傳 { text, secs }，
+   * 其他時候回傳 null。由渲染層畫在戰場上方。
+   */
+  countdown() {
+    const w = G.wave;
+    if (w.finished) return null;
+    if (w.index === -1) {
+      return { text: '⏳ 準備時間 — 首波來襲', secs: Math.max(0, Math.ceil(w.nextWaveAt - G.time)) };
+    }
+    if (w.allSpawned && G.enemies.length === 0 && w.clearedAt !== null) {
+      return { text: '⏳ 下一波來襲', secs: Math.max(0, Math.ceil(w.clearedAt + CONFIG.NEXT_WAVE_DELAY - G.time)) };
+    }
+    return null;
   },
 };

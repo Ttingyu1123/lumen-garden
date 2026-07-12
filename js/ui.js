@@ -1,7 +1,7 @@
 /* ============================================================
    ui.js — DOM 介面
-   卡牌列（選取 / 冷卻 / 買不起變灰）、HUD、toast、
-   波次橫幅、開始 / 勝利 / 失敗畫面切換。
+   卡牌列（選取 / 冷卻遮罩 / 買不起變灰）、HUD、toast、
+   波次橫幅、暫停 / 音效 / 說明按鈕、畫面切換。
    ============================================================ */
 
 const UI = {
@@ -9,7 +9,7 @@ const UI = {
   toastTimer: null,
 
   /** 初始化：抓節點、生成卡牌列、綁按鈕 */
-  init(onStart) {
+  init(handlers) {
     this.els = {
       luxCount: document.getElementById('lux-count'),
       waveLabel: document.getElementById('wave-label'),
@@ -19,13 +19,42 @@ const UI = {
       screenStart: document.getElementById('screen-start'),
       screenWin: document.getElementById('screen-win'),
       screenLose: document.getElementById('screen-lose'),
+      screenHelp: document.getElementById('screen-help'),
+      btnPause: document.getElementById('btn-pause'),
+      btnSound: document.getElementById('btn-sound'),
     };
 
     this.buildCardBar();
+    this.buildHelp();
 
-    document.getElementById('btn-start').addEventListener('click', onStart);
-    document.getElementById('btn-restart-win').addEventListener('click', onStart);
-    document.getElementById('btn-restart-lose').addEventListener('click', onStart);
+    document.getElementById('btn-start').addEventListener('click', handlers.onStart);
+    document.getElementById('btn-restart-win').addEventListener('click', handlers.onStart);
+    document.getElementById('btn-restart-lose').addEventListener('click', handlers.onStart);
+
+    // 暫停 / 繼續
+    this.els.btnPause.addEventListener('click', handlers.onTogglePause);
+
+    // 音效開關
+    this.els.btnSound.addEventListener('click', () => {
+      const on = Sfx.toggle();
+      this.els.btnSound.textContent = on ? '🔊' : '🔇';
+      this.toast(on ? '音效：開' : '音效：關');
+    });
+
+    // 遊戲說明：開啟時自動暫停，關閉時恢復原狀
+    let wasPaused = false;
+    const openHelp = () => {
+      wasPaused = G.paused;
+      if (G.phase === 'playing') { G.paused = true; this.syncPauseButton(); }
+      this.els.screenHelp.classList.remove('hidden');
+    };
+    const closeHelp = () => {
+      this.els.screenHelp.classList.add('hidden');
+      if (G.phase === 'playing' && !wasPaused) { G.paused = false; this.syncPauseButton(); }
+    };
+    document.getElementById('btn-help').addEventListener('click', openHelp);
+    document.getElementById('btn-help-start').addEventListener('click', openHelp);
+    document.getElementById('btn-close-help').addEventListener('click', closeHelp);
   },
 
   /** 依 UNIT_TYPES 生成卡牌 */
@@ -42,15 +71,30 @@ const UI = {
         <div class="card-cost">✨ ${def.cost}</div>
         <div class="card-cd" style="height:0"></div>
       `;
+      card.title = `${def.desc || ''}（冷卻 ${def.cooldown} 秒）`;
       card.addEventListener('click', () => this.onCardClick(def.id));
       this.els.cardBar.appendChild(card);
       this.cards[def.id] = card;
     }
   },
 
+  /** 說明 overlay 的單位 / 敵人表格由資料表生成，永不與 config 脫節 */
+  buildHelp() {
+    const unitRows = Object.values(UNIT_TYPES).map(d =>
+      `<tr><td>${d.emoji} ${d.name}</td><td>✨${d.cost}</td><td>${d.cooldown}s</td><td>${d.desc || ''}</td></tr>`
+    ).join('');
+    const enemyRows = Object.values(ENEMY_TYPES).map(d =>
+      `<tr><td>${d.emoji} ${d.name}</td><td>${d.hp}${d.armor ? ` +🛡️${d.armor}` : ''}</td><td>${d.desc || ''}</td></tr>`
+    ).join('');
+    document.getElementById('help-units').innerHTML =
+      `<tr><th>單位</th><th>成本</th><th>冷卻</th><th>功能</th></tr>${unitRows}`;
+    document.getElementById('help-enemies').innerHTML =
+      `<tr><th>敵人</th><th>血量</th><th>特性</th></tr>${enemyRows}`;
+  },
+
   /** 點卡牌：檢查冷卻與資源，通過才選取（再點一次取消選取） */
   onCardClick(typeId) {
-    if (G.phase !== 'playing') return;
+    if (G.phase !== 'playing' || G.paused) return;
     const def = UNIT_TYPES[typeId];
 
     if (G.selectedType === typeId) {   // 再點一次 = 取消
@@ -96,6 +140,12 @@ const UI = {
   updateHUD() {
     this.els.luxCount.textContent = G.lux;
     this.els.waveLabel.textContent = Waves.label();
+  },
+
+  /** 暫停按鈕圖示與狀態同步 */
+  syncPauseButton() {
+    this.els.btnPause.textContent = G.paused ? '▶' : '⏸';
+    this.els.btnPause.title = G.paused ? '繼續 (P)' : '暫停 (P)';
   },
 
   /** 波次橫幅（CSS animation 播完自動隱藏） */

@@ -67,6 +67,7 @@ const Resources = {
         G.lux += o.value;
         G.floaters.push({ x: o.x, y: o.y, text: `+${o.value}`, age: 0 });
         G.orbs.splice(i, 1);
+        Sfx.play('collect');
         return true;
       }
     }

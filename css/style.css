@@ -52,6 +52,29 @@ body {
 
 #hud-lux #lux-count { color: #ffe08a; }
 
+#hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-btn {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  background: #1c2742;
+  border: 1px solid #35476e;
+  border-radius: 10px;
+  color: #eef3ff;
+  cursor: pointer;
+  transition: transform .08s, border-color .08s;
+}
+
+.hud-btn:hover {
+  transform: translateY(-1px);
+  border-color: #ffd97a;
+}
+
 /* ---------- 卡牌選擇列 ---------- */
 #card-bar {
   display: flex;
@@ -202,5 +225,51 @@ canvas {
   transform: translateY(-2px);
   box-shadow: 0 4px 18px rgba(255, 217, 122, .4);
 }
+
+.btn-sub {
+  display: block;
+  margin: 12px auto 0;
+  font-size: 14px;
+  padding: 8px 24px;
+  border: 1px solid #35476e;
+  border-radius: 10px;
+  background: transparent;
+  color: #cdd9f5;
+  cursor: pointer;
+}
+
+.btn-sub:hover { border-color: #ffd97a; color: #ffe9b0; }
+
+/* ---------- 遊戲說明 ---------- */
+.help-box { max-width: 640px; }
+
+.help-scroll {
+  max-height: 60vh;
+  overflow-y: auto;
+  text-align: left;
+  margin-bottom: 18px;
+  padding-right: 8px;
+}
+
+.help-scroll h3 {
+  color: #ffd97a;
+  margin: 14px 0 6px;
+  font-size: 16px;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 4px 0 8px;
+}
+
+.help-table th, .help-table td {
+  border: 1px solid #35476e;
+  padding: 5px 8px;
+  text-align: left;
+}
+
+.help-table th { background: #24304f; color: #ffd97a; }
 
 .hidden { display: none !important; }

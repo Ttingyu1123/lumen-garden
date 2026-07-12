@@ -9,16 +9,21 @@
 <body>
   <div id="app">
 
-    <!-- 頂部 HUD：資源 / 波次 -->
+    <!-- 頂部 HUD：資源 / 波次 / 控制按鈕 -->
     <header id="hud">
       <div class="hud-item" id="hud-lux">
         <span class="hud-icon">✨</span>
         <span id="lux-count">0</span>
       </div>
       <h1 id="hud-title">星光庭園</h1>
-      <div class="hud-item" id="hud-wave">
-        <span class="hud-icon">🌊</span>
-        <span id="wave-label">準備中</span>
+      <div id="hud-right">
+        <div class="hud-item" id="hud-wave">
+          <span class="hud-icon">🌊</span>
+          <span id="wave-label">準備中</span>
+        </div>
+        <button id="btn-pause" class="hud-btn" title="暫停 (P)">⏸</button>
+        <button id="btn-sound" class="hud-btn" title="音效開關">🔊</button>
+        <button id="btn-help" class="hud-btn" title="遊戲說明">❓</button>
       </div>
     </header>
 
@@ -43,9 +48,11 @@
         <ul class="howto">
           <li>🖱️ 點卡牌選單位，再點草地放置</li>
           <li>✨ 點擊掉落的光珠收集「光能」</li>
-          <li>🧟 擋下 5 波暗影族，別讓牠們走到最左邊！</li>
+          <li>🧟 擋下 10 波暗影族，別讓牠們走到最左邊！</li>
+          <li>⏸ 隨時可按 P 或右上角按鈕暫停</li>
         </ul>
         <button id="btn-start" class="btn-main">開始遊戲</button>
+        <button id="btn-help-start" class="btn-sub">📖 遊戲說明</button>
       </div>
     </div>
 
@@ -53,7 +60,7 @@
     <div id="screen-win" class="screen hidden">
       <div class="screen-box">
         <h2>🏆 勝利！</h2>
-        <p class="screen-sub">庭園的星光守住了，暗影族全數退散。</p>
+        <p class="screen-sub">十波暗影全數退散，庭園的星光守住了。</p>
         <button id="btn-restart-win" class="btn-main">再玩一次</button>
       </div>
     </div>
@@ -67,11 +74,39 @@
       </div>
     </div>
 
+    <!-- 遊戲說明（表格內容由 ui.js 依 config 資料表生成） -->
+    <div id="screen-help" class="screen hidden">
+      <div class="screen-box help-box">
+        <h2>📖 遊戲說明</h2>
+        <div class="help-scroll">
+          <h3>基本流程</h3>
+          <ul class="howto">
+            <li>開場有 15 秒準備時間，先種 🍄 聚光菇累積經濟</li>
+            <li>點卡牌 → 點草地格子放置；再點一次卡牌可取消</li>
+            <li>點擊 ✨ 光珠收集光能（落地 12 秒後消失，快過期會閃爍）</li>
+            <li>共 10 波，越後面敵人越多、血越厚；全部擋下即勝利</li>
+          </ul>
+          <h3>防禦單位</h3>
+          <table class="help-table" id="help-units"></table>
+          <h3>敵人圖鑑</h3>
+          <table class="help-table" id="help-enemies"></table>
+          <h3>小訣竅</h3>
+          <ul class="howto">
+            <li>❄️ 寒霜蓮放在 🌵 射手前排，減速讓輸出時間翻倍</li>
+            <li>👹 重甲兵的護甲要先打破才會掉血，優先集火</li>
+            <li>🪨 磐石守衛擋最前排，換取後排輸出時間</li>
+          </ul>
+        </div>
+        <button id="btn-close-help" class="btn-main">關閉</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- 依序載入：後面的檔案依賴前面的全域定義（刻意不用 ES modules，file:// 直接可跑） -->
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/sfx.js"></script>
   <script src="js/grid.js"></script>
   <script src="js/resources.js"></script>
   <script src="js/projectiles.js"></script>
@@ -79,6 +114,7 @@
   <script src="js/enemies.js"></script>
   <script src="js/waves.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/render.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
