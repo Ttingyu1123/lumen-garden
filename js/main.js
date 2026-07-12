@@ -141,23 +141,29 @@
     for (const f of G.floaters) { f.y -= 30 * dt; f.age += dt; }
     G.floaters = G.floaters.filter(f => f.age < 1);
 
-    // 勝負切畫面（update 只在 playing 時被呼叫，所以只會觸發一次）
-    if (G.phase === 'win' || G.phase === 'lose') {
-      Sfx.play(G.phase);
-      if (G.phase === 'lose') UI.fillLoseStats();   // 撐到第幾波 + 無盡最高紀錄
-      UI.showScreen(G.phase);
-    }
-
     UI.updateHUD();
     UI.refreshCards();
   }
 
   /* ---------------- 主迴圈 ---------------- */
 
+  let handledPhase = 'start';   // 已處理過的 phase，偵測轉換用
+
   function loop(ts) {
     const dt = Math.min((ts - lastTs) / 1000, 0.05);  // 切頁回來 dt 上限 50ms，避免跳幀穿模
     lastTs = ts;
     if (G.phase === 'playing' && !G.paused) update(dt);
+
+    // phase 轉換統一在這裡處理：不管誰改了 G.phase（遊戲邏輯或測試腳本）都會生效
+    if (G.phase !== handledPhase) {
+      handledPhase = G.phase;
+      if (G.phase === 'win' || G.phase === 'lose') {
+        Sfx.play(G.phase);
+        if (G.phase === 'lose') UI.fillLoseStats();   // 撐到第幾波 + 無盡最高紀錄
+        UI.showScreen(G.phase);
+      }
+    }
+
     Renderer.render(hoverCell);
     requestAnimationFrame(loop);
   }

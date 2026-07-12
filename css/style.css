@@ -18,6 +18,7 @@ body {
   position: relative;
   padding: 12px 16px 24px;
   width: fit-content;
+  max-width: 100%;
 }
 
 /* ---------- 頂部 HUD ---------- */
@@ -78,6 +79,7 @@ body {
 /* ---------- 卡牌選擇列 ---------- */
 #card-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 8px 0 10px;
 }
@@ -130,6 +132,11 @@ canvas {
   border: 2px solid #35476e;
   background: #16203a;
   cursor: pointer;
+  /* 內部解析度固定 912×528，CSS 縮放跟隨螢幕；
+     輸入座標換算在 main.js 用 getBoundingClientRect 比例處理 */
+  width: min(912px, 100%);
+  height: auto;
+  touch-action: manipulation;   /* 觸控時停用雙擊縮放 */
 }
 
 /* 波次橫幅 */
@@ -282,3 +289,23 @@ canvas {
 .help-table th { background: #24304f; color: #ffd97a; }
 
 .hidden { display: none !important; }
+
+/* ---------- 小螢幕（手機直向） ---------- */
+@media (max-width: 700px) {
+  #app { padding: 6px 8px 16px; }
+
+  #hud { flex-wrap: wrap; gap: 8px; }
+  #hud-title { font-size: 15px; letter-spacing: 2px; order: -1; width: 100%; text-align: center; }
+  .hud-item { font-size: 14px; min-width: 80px; padding: 4px 10px; }
+  .hud-btn { width: 36px; height: 36px; font-size: 15px; }
+
+  .card { width: 64px; padding: 5px 2px 4px; }
+  .card .card-emoji { font-size: 22px; }
+  .card .card-name  { font-size: 10px; }
+  .card .card-cost  { font-size: 11px; }
+
+  #banner { font-size: 28px; }
+  .screen-box { padding: 24px 20px; max-width: 92vw; }
+  .screen-box h2 { font-size: 26px; }
+  .howto { line-height: 1.7; font-size: 14px; }
+}
