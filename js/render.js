@@ -13,6 +13,28 @@ const Renderer = {
     this.ctx = canvas.getContext('2d');
   },
 
+  /**
+   * emoji 專用字型：明確指定彩色 emoji 字型堆疊。
+   * 泛型 serif 在 lang="zh-Hant" 頁面會解析到中文字型，
+   * emoji fallback 變成單色字形（被 fillStyle 染色、又小又暗）。
+   */
+  font(size) {
+    return `${size}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", serif`;
+  },
+
+  /**
+   * 畫 emoji 的唯一入口。
+   * 彩色字形會「乘上 fillStyle 的透明度」——若前面畫過半透明色塊
+   * （如防線帶 rgba(...,.12)），忘記重設就會整批 emoji 變 12% 透明。
+   * 這裡固定先設不透明 fillStyle 再畫，杜絕狀態洩漏。
+   */
+  emoji(text, x, y, size) {
+    const ctx = this.ctx;
+    ctx.font = this.font(size);
+    ctx.fillStyle = '#000';
+    ctx.fillText(text, x, y);
+  },
+
   /* ---------- 各層 ---------- */
 
   drawGrid() {
@@ -25,7 +47,7 @@ const Renderer = {
         ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
       }
     }
-    // 左側防線：星光炸彈還在的列亮金星（最後防線），用掉的列剩暗色小屋
+    // 左側防線：星光炸彈還在的列亮 🌟（最後防線），用掉的列剩暗色 🏡
     ctx.fillStyle = 'rgba(255, 217, 122, .12)';
     ctx.fillRect(0, CONFIG.GRID_Y, CONFIG.GRID_X, CONFIG.ROWS * CONFIG.CELL_H);
     for (let r = 0; r < CONFIG.ROWS; r++) {
@@ -33,11 +55,11 @@ const Renderer = {
       if (G.rowBombs[r]) {
         const pulse = 1 + Math.sin(G.time * 3 + r) * .15;
         ctx.globalAlpha = .8 + Math.sin(G.time * 3 + r) * .2;
-        Assets.draw(ctx, 'star', CONFIG.GRID_X / 2, y, 22 * pulse, 22 * pulse);
+        this.emoji('🌟', CONFIG.GRID_X / 2, y, Math.round(20 * pulse));
         ctx.globalAlpha = 1;
       } else {
         ctx.globalAlpha = .45;
-        Assets.draw(ctx, 'house', CONFIG.GRID_X / 2, y, 20, 20);
+        this.emoji('🏡', CONFIG.GRID_X / 2, y, 20);
         ctx.globalAlpha = 1;
       }
     }
@@ -62,7 +84,7 @@ const Renderer = {
       // 半透明預覽
       ctx.globalAlpha = .55;
       const c = Grid.cellCenter(hoverCell.row, hoverCell.col);
-      Assets.draw(ctx, G.selectedType, c.x, c.y, 60, 60);
+      this.emoji(UNIT_TYPES[G.selectedType].emoji, c.x, c.y, 46);
       ctx.globalAlpha = 1;
     }
   },
@@ -83,8 +105,8 @@ const Renderer = {
       const c = Grid.cellCenter(u.row, u.col);
       // 放置彈出動畫：0.25 秒內從 55% 長到 100%
       const pop = Math.min(1, u.age / 0.25);
-      const size = Math.round(64 * (0.55 + 0.45 * pop));
-      Assets.draw(ctx, u.typeId, c.x, c.y + 2, size, size);
+      const size = Math.round(46 * (0.55 + 0.45 * pop));
+      this.emoji(u.def.emoji, c.x, c.y + 2, size);
       this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
     }
   },
@@ -107,11 +129,11 @@ const Renderer = {
         ctx.fill();
       }
 
-      Assets.draw(ctx, e.typeId, e.x + shake, y + 2, draw, draw);
+      this.emoji(e.def.emoji, e.x + shake, y + 2, Math.round(draw * 0.82));   // 一般 48px、Boss 83px
 
       // 護甲未破：右上角小盾牌
       if (e.armor > 0) {
-        Assets.draw(ctx, 'shield', e.x + half * 0.8, y - half * 0.85, 16, 16);
+        this.emoji('🛡️', e.x + half * 0.8, y - half * 0.85, 18);
       }
 
       // 受傷閃白
@@ -163,11 +185,21 @@ const Renderer = {
       const expiring = o.landed && (CONFIG.ORB_LIFETIME - o.age) < 3;
       if (expiring && Math.floor(G.time * 6) % 2 === 0) continue;
       const pulse = 1 + Math.sin(G.time * 5 + o.x) * .08;
-      ctx.fillStyle = 'rgba(255, 224, 138, .35)';
+      // 深色底盤 + 金色描邊：疊在單位上也看得清楚
+      ctx.fillStyle = 'rgba(12, 18, 34, .6)';
       ctx.beginPath();
-      ctx.arc(o.x, o.y, 20 * pulse, 0, Math.PI * 2);
+      ctx.arc(o.x, o.y, 17, 0, Math.PI * 2);
       ctx.fill();
-      Assets.draw(ctx, 'orb', o.x, o.y, 30 * pulse, 30 * pulse);
+      ctx.strokeStyle = 'rgba(255, 213, 94, .9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, 17 * pulse, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255, 224, 138, .3)';
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, 22 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+      this.emoji('✨', o.x, o.y + 1, 24);
     }
   },
 

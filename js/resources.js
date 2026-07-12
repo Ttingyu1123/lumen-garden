@@ -21,12 +21,12 @@ const Resources = {
     });
   },
 
-  /** 單位生產的光珠：直接出現在該單位旁邊（微彈跳感用短距下落） */
+  /** 單位生產的光珠：拋到格子右下角落地，避免疊在生產者身上看不見 */
   spawnOrbAt(x, y) {
     G.orbs.push({
-      x: x + (Math.random() * 36 - 18),
-      y: y - 30,
-      targetY: y + (Math.random() * 20 - 4),
+      x: x + 26 + (Math.random() * 12 - 6),
+      y: y - 20,
+      targetY: y + 26 + (Math.random() * 8 - 4),
       landed: false,
       age: 0,
       value: CONFIG.ORB_VALUE,

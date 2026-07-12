@@ -51,13 +51,14 @@ CONFIG.CANVAS_W = CONFIG.GRID_X * 2 + CONFIG.COLS * CONFIG.CELL_W; // 912
 CONFIG.CANVAS_H = CONFIG.GRID_Y * 2 + CONFIG.ROWS * CONFIG.CELL_H; // 528
 
 /* ------------------------------------------------------------
-   防禦單位資料表（全部原創命名；美術為 assets.js 的同名 SVG）
+   防禦單位資料表（全部原創命名 + emoji 美術）
    type 欄位決定行為：producer / shooter / wall
    shooter 的投射物規格集中在 projectile 欄位
    ------------------------------------------------------------ */
 const UNIT_TYPES = {
   bloom: {
     id: 'bloom',
+    emoji: '🍄',
     name: '聚光菇',
     type: 'producer',
     cost: 50,
@@ -68,6 +69,7 @@ const UNIT_TYPES = {
   },
   thorn: {
     id: 'thorn',
+    emoji: '🌵',
     name: '棘刺射手',
     type: 'shooter',
     cost: 100,
@@ -80,6 +82,7 @@ const UNIT_TYPES = {
   },
   frost: {
     id: 'frost',
+    emoji: '❄️',
     name: '寒霜蓮',
     type: 'shooter',
     cost: 75,
@@ -93,6 +96,7 @@ const UNIT_TYPES = {
   },
   blaze: {
     id: 'blaze',
+    emoji: '🌺',
     name: '爆炎花',
     type: 'shooter',
     cost: 150,
@@ -106,6 +110,7 @@ const UNIT_TYPES = {
   },
   boulder: {
     id: 'boulder',
+    emoji: '🪨',
     name: '磐石守衛',
     type: 'wall',
     cost: 50,
@@ -122,6 +127,7 @@ const UNIT_TYPES = {
 const ENEMY_TYPES = {
   shambler: {
     id: 'shambler',
+    emoji: '🧟',
     name: '暗影慢行者',
     hp: 200,
     armor: 0,
@@ -133,6 +139,7 @@ const ENEMY_TYPES = {
   },
   sprinter: {
     id: 'sprinter',
+    emoji: '👺',
     name: '暗影疾走者',
     hp: 130,
     armor: 0,
@@ -144,6 +151,7 @@ const ENEMY_TYPES = {
   },
   brute: {
     id: 'brute',
+    emoji: '👹',
     name: '暗影重甲兵',
     hp: 180,
     armor: 150,           // 護甲先扛 150 傷害
@@ -155,6 +163,7 @@ const ENEMY_TYPES = {
   },
   boss: {
     id: 'boss',
+    emoji: '😈',
     name: '暗影君王',
     hp: 1800,
     armor: 400,
