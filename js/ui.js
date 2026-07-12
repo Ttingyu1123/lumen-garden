@@ -27,9 +27,12 @@ const UI = {
     this.buildCardBar();
     this.buildHelp();
 
-    document.getElementById('btn-start').addEventListener('click', handlers.onStart);
-    document.getElementById('btn-restart-win').addEventListener('click', handlers.onStart);
-    document.getElementById('btn-restart-lose').addEventListener('click', handlers.onStart);
+    // 開始 / 重開按鈕 → 各自對應模式；敗北重開沿用本局模式
+    document.getElementById('btn-start').addEventListener('click', () => handlers.onStart('campaign'));
+    document.getElementById('btn-endless').addEventListener('click', () => handlers.onStart('endless'));
+    document.getElementById('btn-restart-win').addEventListener('click', () => handlers.onStart('campaign'));
+    document.getElementById('btn-win-endless').addEventListener('click', () => handlers.onStart('endless'));
+    document.getElementById('btn-restart-lose').addEventListener('click', () => handlers.onStart(G.mode));
 
     // 暫停 / 繼續
     this.els.btnPause.addEventListener('click', handlers.onTogglePause);
@@ -76,6 +79,23 @@ const UI = {
       this.els.cardBar.appendChild(card);
       this.cards[def.id] = card;
     }
+
+    // 鏟子：特殊卡，無成本無冷卻，點單位格移除並退 50% 光能
+    const shovel = document.createElement('div');
+    shovel.className = 'card card-shovel';
+    shovel.innerHTML = `
+      <div class="card-emoji">🥄</div>
+      <div class="card-name">鏟子</div>
+      <div class="card-cost">退 50%</div>
+    `;
+    shovel.title = '鏟除單位，退回一半光能';
+    shovel.addEventListener('click', () => {
+      if (G.phase !== 'playing' || G.paused) return;
+      G.selectedType = G.selectedType === 'shovel' ? null : 'shovel';
+      this.refreshCards();
+    });
+    this.els.cardBar.appendChild(shovel);
+    this.shovelCard = shovel;
   },
 
   /** 說明 overlay 的單位 / 敵人表格由資料表生成，永不與 config 脫節 */
@@ -117,6 +137,7 @@ const UI = {
 
   /** 每幀更新卡牌外觀：選取框、冷卻遮罩高度、買不起變灰 */
   refreshCards() {
+    this.shovelCard.classList.toggle('selected', G.selectedType === 'shovel');
     for (const def of Object.values(UNIT_TYPES)) {
       const card = this.cards[def.id];
       card.classList.toggle('selected', G.selectedType === def.id);
@@ -167,6 +188,26 @@ const UI = {
     t.style.opacity = '1';
     clearTimeout(this.toastTimer);
     this.toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 2000);
+  },
+
+  /**
+   * 敗北統計：顯示本局撐到第幾波；無盡模式另讀寫 localStorage 最高紀錄。
+   * 在切到失敗畫面前呼叫。
+   */
+  fillLoseStats() {
+    const reached = Math.max(1, G.wave.index + 1);
+    let html = `本局撐到 <b>第 ${reached} 波</b>`;
+    if (G.mode === 'endless') {
+      const KEY = 'lumenGarden.bestWave';
+      const best = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (reached > best) {
+        localStorage.setItem(KEY, String(reached));
+        html += `<br>🏅 新紀錄！（原紀錄第 ${best || '—'} 波）`;
+      } else {
+        html += `<br>歷史最佳：第 ${best} 波`;
+      }
+    }
+    document.getElementById('lose-stats').innerHTML = html;
   },
 
   /** 依遊戲階段切換全螢幕畫面 */

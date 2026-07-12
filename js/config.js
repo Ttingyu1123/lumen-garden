@@ -26,6 +26,23 @@ const CONFIG = {
 
   // --- 狀態效果 ---
   SLOW_FACTOR: 0.5,      // 減速時的移動速度倍率
+
+  // --- 鏟子 ---
+  SHOVEL_REFUND: 0.5,    // 鏟除單位退回成本比例
+
+  // --- 無盡模式：第 11 波起用公式生波 ---
+  ENDLESS: {
+    COUNT_BASE: 10,      // 第 11 波的敵人數
+    COUNT_PER_WAVE: 2,   // 之後每波 +2 隻
+    COUNT_MAX: 30,       // 單波數量上限
+    BRUTE_BASE: 0.15,    // 重甲兵占比起點
+    BRUTE_PER_WAVE: 0.03,
+    BRUTE_MAX: 0.4,
+    SPRINT_P: 0.3,       // 疾走者固定占比
+    GAP_BASE: 2.2,       // 進場間隔（秒），逐波縮短
+    GAP_DECAY: 0.1,
+    GAP_MIN: 0.8,
+  },
 };
 
 // canvas 尺寸由格子推導，index.html 的 canvas 由 main.js 設定
@@ -75,6 +92,20 @@ const UNIT_TYPES = {
     projectile: { damage: 10, speed: 300, slow: 3, color: '#9adcff' },
     sfx: 'frost',
     desc: '霜彈傷害低，但使敵人減速 50%（3 秒）',
+  },
+  blaze: {
+    id: 'blaze',
+    name: '爆炎花',
+    emoji: '🌺',
+    type: 'shooter',
+    cost: 150,
+    cooldown: 10,
+    hp: 100,
+    fireInterval: 2.2,
+    // splash: 命中點半徑內的同列其他敵人也吃 splashDamage
+    projectile: { damage: 26, speed: 280, splash: 70, splashDamage: 13, color: '#ff9a5a' },
+    sfx: 'shoot',
+    desc: '火彈爆裂，濺射同列附近敵人 — 剋制無盡後期的密集大軍',
   },
   boulder: {
     id: 'boulder',

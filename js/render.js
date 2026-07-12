@@ -25,12 +25,25 @@ const Renderer = {
         ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
       }
     }
-    // 左側防線（家）
+    // 左側防線：星光炸彈還在的列亮 🌟（最後防線），用掉的列剩 🏡
     ctx.fillStyle = 'rgba(255, 217, 122, .12)';
     ctx.fillRect(0, CONFIG.GRID_Y, CONFIG.GRID_X, CONFIG.ROWS * CONFIG.CELL_H);
     ctx.font = '20px serif';
     for (let r = 0; r < CONFIG.ROWS; r++) {
-      ctx.fillText('🏡', CONFIG.GRID_X / 2, Grid.rowCenterY(r));
+      const armed = G.rowBombs[r];
+      if (armed) {
+        const pulse = 1 + Math.sin(G.time * 3 + r) * .15;
+        ctx.save();
+        ctx.globalAlpha = .8 + Math.sin(G.time * 3 + r) * .2;
+        ctx.font = `${Math.round(20 * pulse)}px serif`;
+        ctx.fillText('🌟', CONFIG.GRID_X / 2, Grid.rowCenterY(r));
+        ctx.restore();
+        ctx.font = '20px serif';
+      } else {
+        ctx.globalAlpha = .45;
+        ctx.fillText('🏡', CONFIG.GRID_X / 2, Grid.rowCenterY(r));
+        ctx.globalAlpha = 1;
+      }
     }
   },
 
@@ -39,6 +52,14 @@ const Renderer = {
     const ctx = this.ctx;
     const o = Grid.cellOrigin(hoverCell.row, hoverCell.col);
     const occupied = Grid.isOccupied(hoverCell.row, hoverCell.col);
+
+    // 鏟子模式：有單位的格亮橘（可鏟），空格微亮
+    if (G.selectedType === 'shovel') {
+      ctx.fillStyle = occupied ? 'rgba(255, 160, 80, .38)' : 'rgba(255, 255, 255, .08)';
+      ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
+      return;
+    }
+
     ctx.fillStyle = occupied ? 'rgba(255, 80, 80, .3)' : 'rgba(255, 255, 255, .22)';
     ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
     if (!occupied) {

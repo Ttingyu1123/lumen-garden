@@ -19,6 +19,8 @@ const Sfx = {
     wave:    { type: 'sawtooth', f0: 110,  f1: 240,  dur: 0.50, vol: 0.10 },
     win:     { type: 'triangle', f0: 440,  f1: 880,  dur: 0.80, vol: 0.14 },
     lose:    { type: 'sawtooth', f0: 220,  f1: 55,   dur: 1.00, vol: 0.14 },
+    bomb:    { type: 'sawtooth', f0: 800,  f1: 40,   dur: 0.50, vol: 0.18 },
+    dig:     { type: 'triangle', f0: 150,  f1: 320,  dur: 0.12, vol: 0.10 },
   },
 
   /** 必須在使用者手勢（點開始按鈕）之後呼叫，瀏覽器才允許出聲 */

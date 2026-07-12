@@ -14,6 +14,8 @@ const Projectiles = {
       damage: spec.damage,
       speed: spec.speed,
       slow: spec.slow || 0,
+      splash: spec.splash || 0,           // 濺射半徑（px），0 = 無
+      splashDamage: spec.splashDamage || 0,
       color: spec.color || '#b6ff7a',
       age: 0,               // 供渲染做飄浮動畫
     });
@@ -43,6 +45,14 @@ const Projectiles = {
 
       if (hit) {
         Enemies.damage(hit, p.damage, { slow: p.slow });
+        // 濺射：同列、命中點半徑內的其他敵人吃濺射傷害
+        if (p.splash) {
+          G.floaters.push({ x: p.x, y: p.y - 6, text: '💥', age: 0 });
+          const others = G.enemies.filter(
+            e => e !== hit && e.row === p.row && Math.abs(e.x - p.x) <= p.splash
+          );
+          for (const e of others) Enemies.damage(e, p.splashDamage);
+        }
         G.projectiles.splice(i, 1);
       }
     }

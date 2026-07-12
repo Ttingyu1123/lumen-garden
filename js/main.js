@@ -27,6 +27,59 @@
 
   canvas.addEventListener('mouseleave', () => { hoverCell = null; });
 
+  // 觸控支援：把 touch 座標轉換為 canvas 座標並模擬 click
+  canvas.addEventListener('touchmove', (evt) => {
+    if (evt.touches.length > 0) {
+      const rect = canvas.getBoundingClientRect();
+      const touch = evt.touches[0];
+      hoverCell = Grid.cellAt(
+        (touch.clientX - rect.left) * (canvas.width / rect.width),
+        (touch.clientY - rect.top) * (canvas.height / rect.height)
+      );
+    }
+  }, { passive: true });
+
+  canvas.addEventListener('touchend', (evt) => { hoverCell = null; }, { passive: true });
+
+  canvas.addEventListener('touchstart', (evt) => {
+    if (G.phase !== 'playing' || G.paused) return;
+    evt.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const touch = evt.touches[0];
+    const p = {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height),
+    };
+
+    // 觸控邏輯同 click：先收集光珠 → 鏟子模式 → 放置單位
+    if (Resources.tryCollect(p.x, p.y)) return;
+
+    if (G.selectedType === 'shovel') {
+      const cell = Grid.cellAt(p.x, p.y);
+      if (!cell) return;
+      const result = Units.remove(cell.row, cell.col);
+      if (result.ok) {
+        G.selectedType = null;
+        UI.refreshCards();
+      } else {
+        UI.toast(result.reason);
+      }
+      return;
+    }
+
+    if (G.selectedType) {
+      const cell = Grid.cellAt(p.x, p.y);
+      if (!cell) return;
+      const result = Units.tryPlace(G.selectedType, cell.row, cell.col);
+      if (result.ok) {
+        G.selectedType = null;
+        UI.refreshCards();
+      } else {
+        UI.toast(result.reason);
+      }
+    }
+  });
+
   canvas.addEventListener('click', (evt) => {
     if (G.phase !== 'playing' || G.paused) return;
     const p = canvasPos(evt);
@@ -34,7 +87,21 @@
     // 1) 優先收集光珠
     if (Resources.tryCollect(p.x, p.y)) return;
 
-    // 2) 有選卡牌 → 嘗試放置
+    // 2) 鏟子模式 → 移除單位並退回一半光能
+    if (G.selectedType === 'shovel') {
+      const cell = Grid.cellAt(p.x, p.y);
+      if (!cell) return;
+      const result = Units.remove(cell.row, cell.col);
+      if (result.ok) {
+        G.selectedType = null;
+        UI.refreshCards();
+      } else {
+        UI.toast(result.reason);
+      }
+      return;
+    }
+
+    // 3) 有選卡牌 → 嘗試放置
     if (G.selectedType) {
       const cell = Grid.cellAt(p.x, p.y);
       if (!cell) return;
@@ -77,6 +144,7 @@
     // 勝負切畫面（update 只在 playing 時被呼叫，所以只會觸發一次）
     if (G.phase === 'win' || G.phase === 'lose') {
       Sfx.play(G.phase);
+      if (G.phase === 'lose') UI.fillLoseStats();   // 撐到第幾波 + 無盡最高紀錄
       UI.showScreen(G.phase);
     }
 
@@ -96,9 +164,9 @@
 
   /* ---------------- 啟動 ---------------- */
 
-  function startGame() {
+  function startGame(mode) {
     Sfx.init();                 // 需要使用者手勢後才能建 AudioContext
-    resetGame();
+    resetGame(mode);
     UI.showScreen('playing');   // 隱藏所有 overlay
     UI.syncPauseButton();
     UI.updateHUD();

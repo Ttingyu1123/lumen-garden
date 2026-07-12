@@ -34,6 +34,8 @@ const Enemies = {
   },
 
   update(dt) {
+    const bombRows = [];   // 本幀被引爆的列，迴圈後統一清場
+
     for (const e of G.enemies) {
       // 狀態計時器
       if (e.slowT > 0) e.slowT -= dt;
@@ -67,10 +69,26 @@ const Enemies = {
         e.x -= e.def.speed * factor * dt;
       }
 
-      // 3) 破防判定
+      // 3) 破防判定：該列還有星光炸彈就引爆清場（僅此一次），否則輸
       if (e.x <= Grid.defeatX()) {
-        G.phase = 'lose';
+        if (G.rowBombs[e.row] || bombRows.includes(e.row)) {
+          G.rowBombs[e.row] = false;
+          if (!bombRows.includes(e.row)) bombRows.push(e.row);
+        } else {
+          G.phase = 'lose';
+        }
       }
+    }
+
+    // 星光炸彈清場（迴圈外處理，避免邊走訪邊刪除）
+    for (const row of bombRows) {
+      const y = Grid.rowCenterY(row);
+      for (const v of G.enemies) {
+        if (v.row === row) G.floaters.push({ x: v.x, y: y - 10, text: '💥', age: 0 });
+      }
+      G.enemies = G.enemies.filter(en => en.row !== row);
+      Sfx.play('bomb');
+      UI.toast('🌟 星光炸彈引爆！這列的最後防線已用掉');
     }
   },
 

@@ -226,6 +226,15 @@ canvas {
   box-shadow: 0 4px 18px rgba(255, 217, 122, .4);
 }
 
+.btn-endless {
+  display: block;
+  margin: 10px auto 0;
+  background: linear-gradient(180deg, #b79aff, #7a5cff);
+  color: #1a0f3d;
+}
+
+.btn-endless:hover { box-shadow: 0 4px 18px rgba(150, 120, 255, .45); }
+
 .btn-sub {
   display: block;
   margin: 12px auto 0;

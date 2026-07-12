@@ -81,6 +81,21 @@ const Units = {
     }
   },
 
+  /** 鏟除單位：退回 50% 成本。回傳 { ok } 或 { ok:false, reason } */
+  remove(row, col) {
+    const unit = G.grid[row][col];
+    if (!unit) return { ok: false, reason: '這格沒有單位可以鏟' };
+    const refund = Math.floor(unit.def.cost * CONFIG.SHOVEL_REFUND);
+    G.lux += refund;
+    const c = Grid.cellCenter(row, col);
+    G.floaters.push({ x: c.x, y: c.y, text: `+${refund}`, age: 0 });
+    G.grid[row][col] = null;
+    const i = G.units.indexOf(unit);
+    if (i !== -1) G.units.splice(i, 1);
+    Sfx.play('dig');
+    return { ok: true };
+  },
+
   /** 單位受擊；死亡時從格子與清單移除 */
   damage(unit, amount) {
     unit.hp -= amount;

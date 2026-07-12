@@ -46,12 +46,13 @@
         <h2>✨ 星光庭園 ✨</h2>
         <p class="screen-sub">Lumen Garden — 橫向塔防</p>
         <ul class="howto">
-          <li>🖱️ 點卡牌選單位，再點草地放置</li>
+          <li>🖱️ 點卡牌選單位，再點草地放置；🥄 鏟子可回收單位</li>
           <li>✨ 點擊掉落的光珠收集「光能」</li>
-          <li>🧟 擋下 10 波暗影族，別讓牠們走到最左邊！</li>
+          <li>🌟 每列有一顆星光炸彈當最後防線，僅此一次</li>
           <li>⏸ 隨時可按 P 或右上角按鈕暫停</li>
         </ul>
-        <button id="btn-start" class="btn-main">開始遊戲</button>
+        <button id="btn-start" class="btn-main">🏆 戰役模式（10 波）</button>
+        <button id="btn-endless" class="btn-main btn-endless">♾️ 無盡模式</button>
         <button id="btn-help-start" class="btn-sub">📖 遊戲說明</button>
       </div>
     </div>
@@ -62,6 +63,7 @@
         <h2>🏆 勝利！</h2>
         <p class="screen-sub">十波暗影全數退散，庭園的星光守住了。</p>
         <button id="btn-restart-win" class="btn-main">再玩一次</button>
+        <button id="btn-win-endless" class="btn-main btn-endless">♾️ 挑戰無盡模式</button>
       </div>
     </div>
 
@@ -70,6 +72,7 @@
       <div class="screen-box">
         <h2>💀 失守……</h2>
         <p class="screen-sub">暗影族闖進了庭園深處。</p>
+        <p id="lose-stats" class="screen-sub"></p>
         <button id="btn-restart-lose" class="btn-main">重新開始</button>
       </div>
     </div>
@@ -84,7 +87,10 @@
             <li>開場有 15 秒準備時間，先種 🍄 聚光菇累積經濟</li>
             <li>點卡牌 → 點草地格子放置；再點一次卡牌可取消</li>
             <li>點擊 ✨ 光珠收集光能（落地 12 秒後消失，快過期會閃爍）</li>
-            <li>共 10 波，越後面敵人越多、血越厚；全部擋下即勝利</li>
+            <li>🏆 戰役模式：擋下 10 波即勝利</li>
+            <li>♾️ 無盡模式：第 11 波起無限生波，越撐越難，拚最高波次紀錄</li>
+            <li>🥄 鏟子：點鏟子再點單位，移除並退回一半光能</li>
+            <li>🌟 星光炸彈：每列一顆，敵人破防時自動引爆清光該列 — 僅此一次</li>
           </ul>
           <h3>防禦單位</h3>
           <table class="help-table" id="help-units"></table>

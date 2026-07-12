@@ -5,6 +5,7 @@
 
 const G = {
   phase: 'start',   // 'start' | 'playing' | 'win' | 'lose'
+  mode: 'campaign', // 'campaign'（10 波破關）| 'endless'（無盡）
   paused: false,    // 暫停中（僅 playing 階段有意義）
   time: 0,          // 遊戲內累計秒數（不用 Date.now，切頁暫停不會跳波）
 
@@ -17,8 +18,9 @@ const G = {
   orbs: [],         // 所有光珠
   floaters: [],     // 「+25」之類的漂浮字
 
-  selectedType: null,   // 目前選中的卡牌 typeId
+  selectedType: null,   // 目前選中的卡牌 typeId；'shovel' = 鏟子模式
   cardReadyAt: {},      // typeId -> 遊戲時間幾秒後可再放置
+  rowBombs: [],         // 每列一顆星光炸彈（最後防線），用掉變 false
 
   wave: {
     index: -1,          // 目前波次（0-based），-1 = 尚未開始
@@ -33,7 +35,8 @@ const G = {
 };
 
 /** 重置為一場新遊戲（開始 / 再玩一次都走這裡） */
-function resetGame() {
+function resetGame(mode = 'campaign') {
+  G.mode = mode;
   G.time = 0;
   G.lux = CONFIG.START_LUX;
 
@@ -50,6 +53,7 @@ function resetGame() {
 
   G.selectedType = null;
   G.cardReadyAt = {};
+  G.rowBombs = new Array(CONFIG.ROWS).fill(true);
 
   G.wave = {
     index: -1,
