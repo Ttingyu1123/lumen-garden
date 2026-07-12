@@ -106,7 +106,7 @@ body {
 
 .card.unaffordable { filter: grayscale(.7) brightness(.7); }
 
-.card .card-emoji { font-size: 30px; line-height: 1.2; }
+.card .card-img { width: 36px; height: 36px; display: block; margin: 0 auto; }
 .card .card-name  { font-size: 12px; margin-top: 2px; color: #cdd9f5; }
 .card .card-cost  { font-size: 13px; font-weight: 700; color: #ffe08a; }
 
@@ -288,6 +288,8 @@ canvas {
 
 .help-table th { background: #24304f; color: #ffd97a; }
 
+.help-img { width: 20px; height: 20px; vertical-align: middle; margin-right: 2px; }
+
 .hidden { display: none !important; }
 
 /* ---------- 小螢幕（手機直向） ---------- */
@@ -300,7 +302,7 @@ canvas {
   .hud-btn { width: 36px; height: 36px; font-size: 15px; }
 
   .card { width: 64px; padding: 5px 2px 4px; }
-  .card .card-emoji { font-size: 22px; }
+  .card .card-img { width: 26px; height: 26px; }
   .card .card-name  { font-size: 10px; }
   .card .card-cost  { font-size: 11px; }
 

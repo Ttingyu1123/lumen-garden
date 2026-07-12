@@ -30,6 +30,10 @@ const Waves = {
       spawns.push({ type, delay: t });
       t += gap;
     }
+    // 每 BOSS_EVERY 波（第 15、20、25…）在波次中段加一隻暗影君王
+    if ((index + 1) % E.BOSS_EVERY === 0) {
+      spawns.push({ type: 'boss', delay: t * 0.5 });
+    }
     return { spawns };
   },
 

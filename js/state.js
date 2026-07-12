@@ -17,6 +17,7 @@ const G = {
   projectiles: [],  // 所有投射物
   orbs: [],         // 所有光珠
   floaters: [],     // 「+25」之類的漂浮字
+  bursts: [],       // 爆裂特效 { x, y, r, color, age }
 
   selectedType: null,   // 目前選中的卡牌 typeId；'shovel' = 鏟子模式
   cardReadyAt: {},      // typeId -> 遊戲時間幾秒後可再放置
@@ -50,6 +51,7 @@ function resetGame(mode = 'campaign') {
   G.projectiles = [];
   G.orbs = [];
   G.floaters = [];
+  G.bursts = [];
 
   G.selectedType = null;
   G.cardReadyAt = {};

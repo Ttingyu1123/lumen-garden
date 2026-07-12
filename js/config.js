@@ -42,6 +42,7 @@ const CONFIG = {
     GAP_BASE: 2.2,       // 進場間隔（秒），逐波縮短
     GAP_DECAY: 0.1,
     GAP_MIN: 0.8,
+    BOSS_EVERY: 5,       // 無盡模式每 N 波出一隻暗影君王
   },
 };
 
@@ -50,7 +51,7 @@ CONFIG.CANVAS_W = CONFIG.GRID_X * 2 + CONFIG.COLS * CONFIG.CELL_W; // 912
 CONFIG.CANVAS_H = CONFIG.GRID_Y * 2 + CONFIG.ROWS * CONFIG.CELL_H; // 528
 
 /* ------------------------------------------------------------
-   防禦單位資料表（全部原創命名 + emoji placeholder）
+   防禦單位資料表（全部原創命名；美術為 assets.js 的同名 SVG）
    type 欄位決定行為：producer / shooter / wall
    shooter 的投射物規格集中在 projectile 欄位
    ------------------------------------------------------------ */
@@ -58,7 +59,6 @@ const UNIT_TYPES = {
   bloom: {
     id: 'bloom',
     name: '聚光菇',
-    emoji: '🍄',
     type: 'producer',
     cost: 50,
     cooldown: 7,          // 卡牌冷卻（秒）
@@ -69,7 +69,6 @@ const UNIT_TYPES = {
   thorn: {
     id: 'thorn',
     name: '棘刺射手',
-    emoji: '🌵',
     type: 'shooter',
     cost: 100,
     cooldown: 7,
@@ -82,7 +81,6 @@ const UNIT_TYPES = {
   frost: {
     id: 'frost',
     name: '寒霜蓮',
-    emoji: '❄️',
     type: 'shooter',
     cost: 75,
     cooldown: 9,
@@ -96,7 +94,6 @@ const UNIT_TYPES = {
   blaze: {
     id: 'blaze',
     name: '爆炎花',
-    emoji: '🌺',
     type: 'shooter',
     cost: 150,
     cooldown: 10,
@@ -110,7 +107,6 @@ const UNIT_TYPES = {
   boulder: {
     id: 'boulder',
     name: '磐石守衛',
-    emoji: '🪨',
     type: 'wall',
     cost: 50,
     cooldown: 15,
@@ -127,35 +123,46 @@ const ENEMY_TYPES = {
   shambler: {
     id: 'shambler',
     name: '暗影慢行者',
-    emoji: '🧟',
     hp: 200,
     armor: 0,
     speed: 13,            // 移動速度 px/s
     damage: 20,           // 每次攻擊傷害
     attackInterval: 1.0,  // 攻擊間隔（秒）
+    size: 52,             // 身體尺寸 px（碰撞半寬 = size/2）
     desc: '慢速主力，遇單位停下啃咬',
   },
   sprinter: {
     id: 'sprinter',
     name: '暗影疾走者',
-    emoji: '👺',
     hp: 130,
     armor: 0,
     speed: 34,            // 快速型：血少跑快
     damage: 20,
     attackInterval: 1.0,
+    size: 52,
     desc: '快速型，血少跑快 — 用寒霜蓮剋制',
   },
   brute: {
     id: 'brute',
     name: '暗影重甲兵',
-    emoji: '👹',
     hp: 180,
     armor: 150,           // 護甲先扛 150 傷害
     speed: 11,
     damage: 25,
     attackInterval: 1.0,
+    size: 52,
     desc: '披甲重裝，護甲打破前不掉血',
+  },
+  boss: {
+    id: 'boss',
+    name: '暗影君王',
+    hp: 1800,
+    armor: 400,
+    speed: 8,             // 巨體緩行
+    damage: 60,           // 一口咬掉大半單位
+    attackInterval: 1.2,
+    size: 88,             // 巨型：碰撞與繪製都更大
+    desc: 'Boss：戰役最終波與無盡每 5 波現身，集全列火力速殺',
   },
 };
 
@@ -226,13 +233,13 @@ const WAVES = [
       [18, 'sprinter'], [19.5, 'shambler'], [21, 'shambler'],
     ]),
   },
-  { // 第 10 波：最終大浪
+  { // 第 10 波：最終大浪 + 暗影君王壓軸
     spawns: spawnList([
       [0, 'brute'], [1, 'shambler'], [2, 'sprinter'], [3.5, 'shambler'],
       [5, 'brute'], [6, 'sprinter'], [7.5, 'shambler'], [9, 'brute'],
-      [10, 'shambler'], [11, 'sprinter'], [12.5, 'shambler'], [14, 'brute'],
-      [15, 'sprinter'], [16.5, 'shambler'], [18, 'brute'], [19, 'sprinter'],
-      [20.5, 'shambler'], [22, 'shambler'],
+      [10, 'shambler'], [11, 'sprinter'], [12, 'boss'], [12.5, 'shambler'],
+      [14, 'brute'], [15, 'sprinter'], [16.5, 'shambler'], [18, 'brute'],
+      [19, 'sprinter'], [20.5, 'shambler'], [22, 'shambler'],
     ]),
   },
 ];

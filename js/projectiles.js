@@ -33,11 +33,12 @@ const Projectiles = {
         continue;
       }
 
-      // 命中判定：同列、且投射物進入敵人身體範圍（半寬 26px）
+      // 命中判定：同列、且投射物進入敵人身體範圍（半寬 = size/2，Boss 更大）
       let hit = null;
       for (const e of G.enemies) {
         if (e.row !== p.row) continue;
-        if (p.x >= e.x - 26 && p.x <= e.x + 26) {
+        const half = e.def.size / 2;
+        if (p.x >= e.x - half && p.x <= e.x + half) {
           // 取最靠左（最先被打到）的那隻
           if (!hit || e.x < hit.x) hit = e;
         }
@@ -47,7 +48,7 @@ const Projectiles = {
         Enemies.damage(hit, p.damage, { slow: p.slow });
         // 濺射：同列、命中點半徑內的其他敵人吃濺射傷害
         if (p.splash) {
-          G.floaters.push({ x: p.x, y: p.y - 6, text: '💥', age: 0 });
+          G.bursts.push({ x: p.x, y: p.y, r: 40, color: '#ff9a5a', age: 0 });
           const others = G.enemies.filter(
             e => e !== hit && e.row === p.row && Math.abs(e.x - p.x) <= p.splash
           );

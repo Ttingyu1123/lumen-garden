@@ -25,23 +25,19 @@ const Renderer = {
         ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
       }
     }
-    // 左側防線：星光炸彈還在的列亮 🌟（最後防線），用掉的列剩 🏡
+    // 左側防線：星光炸彈還在的列亮金星（最後防線），用掉的列剩暗色小屋
     ctx.fillStyle = 'rgba(255, 217, 122, .12)';
     ctx.fillRect(0, CONFIG.GRID_Y, CONFIG.GRID_X, CONFIG.ROWS * CONFIG.CELL_H);
-    ctx.font = '20px serif';
     for (let r = 0; r < CONFIG.ROWS; r++) {
-      const armed = G.rowBombs[r];
-      if (armed) {
+      const y = Grid.rowCenterY(r);
+      if (G.rowBombs[r]) {
         const pulse = 1 + Math.sin(G.time * 3 + r) * .15;
-        ctx.save();
         ctx.globalAlpha = .8 + Math.sin(G.time * 3 + r) * .2;
-        ctx.font = `${Math.round(20 * pulse)}px serif`;
-        ctx.fillText('🌟', CONFIG.GRID_X / 2, Grid.rowCenterY(r));
-        ctx.restore();
-        ctx.font = '20px serif';
+        Assets.draw(ctx, 'star', CONFIG.GRID_X / 2, y, 22 * pulse, 22 * pulse);
+        ctx.globalAlpha = 1;
       } else {
         ctx.globalAlpha = .45;
-        ctx.fillText('🏡', CONFIG.GRID_X / 2, Grid.rowCenterY(r));
+        Assets.draw(ctx, 'house', CONFIG.GRID_X / 2, y, 20, 20);
         ctx.globalAlpha = 1;
       }
     }
@@ -65,9 +61,8 @@ const Renderer = {
     if (!occupied) {
       // 半透明預覽
       ctx.globalAlpha = .55;
-      ctx.font = '46px serif';
       const c = Grid.cellCenter(hoverCell.row, hoverCell.col);
-      ctx.fillText(UNIT_TYPES[G.selectedType].emoji, c.x, c.y);
+      Assets.draw(ctx, G.selectedType, c.x, c.y, 60, 60);
       ctx.globalAlpha = 1;
     }
   },
@@ -88,9 +83,8 @@ const Renderer = {
       const c = Grid.cellCenter(u.row, u.col);
       // 放置彈出動畫：0.25 秒內從 55% 長到 100%
       const pop = Math.min(1, u.age / 0.25);
-      const size = Math.round(46 * (0.55 + 0.45 * pop));
-      ctx.font = `${size}px serif`;
-      ctx.fillText(u.def.emoji, c.x, c.y + 2);
+      const size = Math.round(64 * (0.55 + 0.45 * pop));
+      Assets.draw(ctx, u.typeId, c.x, c.y + 2, size, size);
       this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
     }
   },
@@ -99,6 +93,9 @@ const Renderer = {
     const ctx = this.ctx;
     for (const e of G.enemies) {
       const y = Grid.rowCenterY(e.row);
+      const s = e.def.size;              // 身體尺寸（Boss 88，其餘 52）
+      const draw = s * 1.15;             // 視覺略大於碰撞框
+      const half = s / 2;
       // 攻擊中的敵人微微前傾抖動
       const shake = e.target ? Math.sin(G.time * 20) * 2 : 0;
 
@@ -106,35 +103,34 @@ const Renderer = {
       if (e.slowT > 0) {
         ctx.fillStyle = 'rgba(120, 200, 255, .3)';
         ctx.beginPath();
-        ctx.arc(e.x, y + 22, 22, 0, Math.PI * 2);
+        ctx.arc(e.x, y + half * 0.85, half * 0.85, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      ctx.font = '48px serif';
-      ctx.fillText(e.def.emoji, e.x + shake, y + 2);
+      Assets.draw(ctx, e.typeId, e.x + shake, y + 2, draw, draw);
 
       // 護甲未破：右上角小盾牌
       if (e.armor > 0) {
-        ctx.font = '18px serif';
-        ctx.fillText('🛡️', e.x + 20, y - 22);
+        Assets.draw(ctx, 'shield', e.x + half * 0.8, y - half * 0.85, 16, 16);
       }
 
       // 受傷閃白
       if (e.flashT > 0) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${e.flashT / 0.15 * 0.65})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${e.flashT / 0.15 * 0.6})`;
         ctx.beginPath();
-        ctx.arc(e.x + shake, y, 26, 0, Math.PI * 2);
+        ctx.arc(e.x + shake, y, half, 0, Math.PI * 2);
         ctx.fill();
       }
 
       // 護甲條（灰）疊在血條上方
+      const barW = s;
       if (e.maxArmor > 0 && e.armor > 0) {
         ctx.fillStyle = 'rgba(0,0,0,.55)';
-        ctx.fillRect(e.x - 26, y - 48, 52, 4);
+        ctx.fillRect(e.x - barW / 2, y - half - 22, barW, 4);
         ctx.fillStyle = '#c0c8d8';
-        ctx.fillRect(e.x - 26, y - 48, 52 * (e.armor / e.maxArmor), 4);
+        ctx.fillRect(e.x - barW / 2, y - half - 22, barW * (e.armor / e.maxArmor), 4);
       }
-      this.drawHpBar(e.x, y - 40, 52, e.hp / e.maxHp);
+      this.drawHpBar(e.x, y - half - 14, barW, e.hp / e.maxHp);
     }
   },
 
@@ -171,8 +167,32 @@ const Renderer = {
       ctx.beginPath();
       ctx.arc(o.x, o.y, 20 * pulse, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = '26px serif';
-      ctx.fillText('✨', o.x, o.y + 1);
+      Assets.draw(ctx, 'orb', o.x, o.y, 30 * pulse, 30 * pulse);
+    }
+  },
+
+  /** 爆裂特效：擴散光環 + 放射短刺（取代 emoji 💥） */
+  drawBursts() {
+    const ctx = this.ctx;
+    for (const b of G.bursts) {
+      const t = b.age / 0.45;                 // 0 → 1
+      const radius = b.r * (0.35 + 0.65 * t);
+      ctx.globalAlpha = 1 - t;
+      ctx.strokeStyle = b.color;
+      ctx.lineWidth = 3 * (1 - t) + 1;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      // 六道放射短刺
+      for (let i = 0; i < 6; i++) {
+        const ang = i * Math.PI / 3 + t * 0.6;
+        const r1 = radius * 0.75, r2 = radius * 1.15;
+        ctx.beginPath();
+        ctx.moveTo(b.x + Math.cos(ang) * r1, b.y + Math.sin(ang) * r1);
+        ctx.lineTo(b.x + Math.cos(ang) * r2, b.y + Math.sin(ang) * r2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
     }
   },
 
@@ -222,6 +242,7 @@ const Renderer = {
     this.drawUnits();
     this.drawEnemies();
     this.drawProjectiles();
+    this.drawBursts();
     this.drawOrbs();
     this.drawFloaters();
     this.drawCountdown();

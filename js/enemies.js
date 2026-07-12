@@ -31,6 +31,11 @@ const Enemies = {
       slowT: 0,                // 減速剩餘秒數
       flashT: 0,               // 受傷閃爍剩餘秒數
     });
+
+    if (typeId === 'boss') {
+      UI.showBanner('⚠️ 暗影君王現身！');
+      Sfx.play('bomb');
+    }
   },
 
   update(dt) {
@@ -42,13 +47,14 @@ const Enemies = {
       if (e.flashT > 0) e.flashT -= dt;
 
       // 1) 找攻擊目標：同列、在敵人前方（左側）、距離夠近的最近單位
-      //    敵人身體半寬約 26px，單位佔一格；貼近門檻取 52px（半格多一點）
+      //    貼近門檻 = 單位半寬 26 + 敵人身體半寬（Boss 更大所以更早接敵）
+      const reach = 26 + e.def.size / 2;
       let target = null;
       for (const u of G.units) {
         if (u.row !== e.row) continue;
         const ux = Grid.cellCenter(u.row, u.col).x;
         if (ux > e.x) continue;                 // 只啃前進方向的單位
-        if (e.x - ux > 52) continue;            // 還沒貼到
+        if (e.x - ux > reach) continue;         // 還沒貼到
         if (!target || ux > Grid.cellCenter(target.row, target.col).x) {
           target = u;                           // 取最靠近自己的那個
         }
@@ -84,8 +90,9 @@ const Enemies = {
     for (const row of bombRows) {
       const y = Grid.rowCenterY(row);
       for (const v of G.enemies) {
-        if (v.row === row) G.floaters.push({ x: v.x, y: y - 10, text: '💥', age: 0 });
+        if (v.row === row) G.bursts.push({ x: v.x, y, r: 46, color: '#ffd97a', age: 0 });
       }
+      G.bursts.push({ x: CONFIG.GRID_X + 30, y, r: 70, color: '#ffd97a', age: 0 });
       G.enemies = G.enemies.filter(en => en.row !== row);
       Sfx.play('bomb');
       UI.toast('🌟 星光炸彈引爆！這列的最後防線已用掉');
@@ -111,7 +118,8 @@ const Enemies = {
       const i = G.enemies.indexOf(enemy);
       if (i !== -1) G.enemies.splice(i, 1);
       const y = Grid.rowCenterY(enemy.row);
-      G.floaters.push({ x: enemy.x, y: y - 10, text: '💥', age: 0 });
+      // 死亡爆裂：尺寸跟身型走，Boss 有大場面
+      G.bursts.push({ x: enemy.x, y, r: enemy.def.size * 0.8, color: '#b18cff', age: 0 });
       Sfx.play('death');
     }
   },

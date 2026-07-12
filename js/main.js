@@ -141,6 +141,10 @@
     for (const f of G.floaters) { f.y -= 30 * dt; f.age += dt; }
     G.floaters = G.floaters.filter(f => f.age < 1);
 
+    // 爆裂特效老化
+    for (const b of G.bursts) b.age += dt;
+    G.bursts = G.bursts.filter(b => b.age < 0.45);
+
     UI.updateHUD();
     UI.refreshCards();
   }

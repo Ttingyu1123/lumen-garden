@@ -69,7 +69,7 @@ const UI = {
       card.className = 'card';
       card.dataset.type = def.id;
       card.innerHTML = `
-        <div class="card-emoji">${def.emoji}</div>
+        <img class="card-img" src="${Assets.dataUri(def.id)}" alt="${def.name}">
         <div class="card-name">${def.name}</div>
         <div class="card-cost">✨ ${def.cost}</div>
         <div class="card-cd" style="height:0"></div>
@@ -84,7 +84,7 @@ const UI = {
     const shovel = document.createElement('div');
     shovel.className = 'card card-shovel';
     shovel.innerHTML = `
-      <div class="card-emoji">🥄</div>
+      <img class="card-img" src="${Assets.dataUri('shovel')}" alt="鏟子">
       <div class="card-name">鏟子</div>
       <div class="card-cost">退 50%</div>
     `;
@@ -100,11 +100,12 @@ const UI = {
 
   /** 說明 overlay 的單位 / 敵人表格由資料表生成，永不與 config 脫節 */
   buildHelp() {
+    const icon = id => `<img class="help-img" src="${Assets.dataUri(id)}" alt="">`;
     const unitRows = Object.values(UNIT_TYPES).map(d =>
-      `<tr><td>${d.emoji} ${d.name}</td><td>✨${d.cost}</td><td>${d.cooldown}s</td><td>${d.desc || ''}</td></tr>`
+      `<tr><td>${icon(d.id)} ${d.name}</td><td>✨${d.cost}</td><td>${d.cooldown}s</td><td>${d.desc || ''}</td></tr>`
     ).join('');
     const enemyRows = Object.values(ENEMY_TYPES).map(d =>
-      `<tr><td>${d.emoji} ${d.name}</td><td>${d.hp}${d.armor ? ` +🛡️${d.armor}` : ''}</td><td>${d.desc || ''}</td></tr>`
+      `<tr><td>${icon(d.id)} ${d.name}</td><td>${d.hp}${d.armor ? ` +甲${d.armor}` : ''}</td><td>${d.desc || ''}</td></tr>`
     ).join('');
     document.getElementById('help-units').innerHTML =
       `<tr><th>單位</th><th>成本</th><th>冷卻</th><th>功能</th></tr>${unitRows}`;
