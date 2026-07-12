@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星光庭園 Lumen Garden — 橫向塔防</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- 頂部 HUD：資源 / 波次 -->
+    <header id="hud">
+      <div class="hud-item" id="hud-lux">
+        <span class="hud-icon">✨</span>
+        <span id="lux-count">0</span>
+      </div>
+      <h1 id="hud-title">星光庭園</h1>
+      <div class="hud-item" id="hud-wave">
+        <span class="hud-icon">🌊</span>
+        <span id="wave-label">準備中</span>
+      </div>
+    </header>
+
+    <!-- 單位卡牌選擇列（由 ui.js 動態生成） -->
+    <nav id="card-bar"></nav>
+
+    <!-- 主戰場 -->
+    <div id="canvas-wrap">
+      <canvas id="game"></canvas>
+      <!-- 波次橫幅（「第 N 波來襲！」） -->
+      <div id="banner" class="hidden"></div>
+    </div>
+
+    <!-- 操作提示 toast -->
+    <div id="toast" class="hidden"></div>
+
+    <!-- 開始畫面 -->
+    <div id="screen-start" class="screen">
+      <div class="screen-box">
+        <h2>✨ 星光庭園 ✨</h2>
+        <p class="screen-sub">Lumen Garden — 橫向塔防</p>
+        <ul class="howto">
+          <li>🖱️ 點卡牌選單位，再點草地放置</li>
+          <li>✨ 點擊掉落的光珠收集「光能」</li>
+          <li>🧟 擋下 5 波暗影族，別讓牠們走到最左邊！</li>
+        </ul>
+        <button id="btn-start" class="btn-main">開始遊戲</button>
+      </div>
+    </div>
+
+    <!-- 勝利畫面 -->
+    <div id="screen-win" class="screen hidden">
+      <div class="screen-box">
+        <h2>🏆 勝利！</h2>
+        <p class="screen-sub">庭園的星光守住了，暗影族全數退散。</p>
+        <button id="btn-restart-win" class="btn-main">再玩一次</button>
+      </div>
+    </div>
+
+    <!-- 失敗畫面 -->
+    <div id="screen-lose" class="screen hidden">
+      <div class="screen-box">
+        <h2>💀 失守……</h2>
+        <p class="screen-sub">暗影族闖進了庭園深處。</p>
+        <button id="btn-restart-lose" class="btn-main">重新開始</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 依序載入：後面的檔案依賴前面的全域定義（刻意不用 ES modules，file:// 直接可跑） -->
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/resources.js"></script>
+  <script src="js/projectiles.js"></script>
+  <script src="js/units.js"></script>
+  <script src="js/enemies.js"></script>
+  <script src="js/waves.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

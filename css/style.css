@@ -1,0 +1,206 @@
+/* ============================================================
+   星光庭園 Lumen Garden — 全部樣式
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #10182b;
+  color: #eef3ff;
+  font-family: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  user-select: none;
+}
+
+#app {
+  position: relative;
+  padding: 12px 16px 24px;
+  width: fit-content;
+}
+
+/* ---------- 頂部 HUD ---------- */
+#hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 4px;
+}
+
+#hud-title {
+  font-size: 20px;
+  letter-spacing: 6px;
+  color: #ffd97a;
+  text-shadow: 0 0 12px rgba(255, 217, 122, .5);
+}
+
+.hud-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c2742;
+  border: 1px solid #35476e;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 110px;
+  justify-content: center;
+}
+
+#hud-lux #lux-count { color: #ffe08a; }
+
+/* ---------- 卡牌選擇列 ---------- */
+#card-bar {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0 10px;
+}
+
+.card {
+  position: relative;
+  width: 96px;
+  background: #1c2742;
+  border: 2px solid #35476e;
+  border-radius: 10px;
+  padding: 8px 4px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .08s, border-color .08s;
+  overflow: hidden;
+}
+
+.card:hover { transform: translateY(-2px); }
+
+.card.selected {
+  border-color: #ffd97a;
+  box-shadow: 0 0 10px rgba(255, 217, 122, .45);
+}
+
+.card.unaffordable { filter: grayscale(.7) brightness(.7); }
+
+.card .card-emoji { font-size: 30px; line-height: 1.2; }
+.card .card-name  { font-size: 12px; margin-top: 2px; color: #cdd9f5; }
+.card .card-cost  { font-size: 13px; font-weight: 700; color: #ffe08a; }
+
+/* 冷卻遮罩：由上往下退去，height 由 JS 控制 */
+.card .card-cd {
+  position: absolute;
+  left: 0; top: 0; width: 100%;
+  background: rgba(8, 12, 24, .78);
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: #9fb2dc;
+  font-size: 12px;
+}
+
+/* ---------- 戰場 ---------- */
+#canvas-wrap { position: relative; }
+
+canvas {
+  display: block;
+  border-radius: 12px;
+  border: 2px solid #35476e;
+  background: #16203a;
+  cursor: pointer;
+}
+
+/* 波次橫幅 */
+#banner {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 44px;
+  font-weight: 900;
+  color: #ff8a8a;
+  text-shadow: 0 0 18px rgba(255, 80, 80, .6), 2px 2px 0 #000;
+  pointer-events: none;
+  animation: banner-pop 2.4s ease forwards;
+  white-space: nowrap;
+}
+
+@keyframes banner-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.5); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  25%  { transform: translate(-50%, -50%) scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------- Toast 提示 ---------- */
+#toast {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 28, 50, .95);
+  border: 1px solid #ffd97a;
+  color: #ffe9b0;
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 15px;
+  pointer-events: none;
+  transition: opacity .25s;
+  z-index: 30;
+}
+
+/* ---------- 全螢幕畫面（開始 / 勝利 / 失敗） ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 24, .88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.screen-box {
+  background: #1c2742;
+  border: 2px solid #35476e;
+  border-radius: 16px;
+  padding: 36px 48px;
+  text-align: center;
+  max-width: 460px;
+}
+
+.screen-box h2 {
+  font-size: 34px;
+  margin-bottom: 8px;
+  color: #ffd97a;
+}
+
+.screen-sub { color: #cdd9f5; margin-bottom: 18px; }
+
+.howto {
+  list-style: none;
+  text-align: left;
+  margin: 0 auto 22px;
+  width: fit-content;
+  line-height: 2;
+  color: #dfe8ff;
+}
+
+.btn-main {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 40px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffd97a, #f5a623);
+  color: #3a2a00;
+  cursor: pointer;
+  transition: transform .08s, box-shadow .08s;
+}
+
+.btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(255, 217, 122, .4);
+}
+
+.hidden { display: none !important; }
