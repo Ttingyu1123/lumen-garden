@@ -256,6 +256,11 @@ canvas {
 
 .btn-sub:hover { border-color: #ffd97a; color: #ffe9b0; }
 
+.btn-link {
+  width: fit-content;
+  text-decoration: none;
+}
+
 /* ---------- 遊戲說明 ---------- */
 .help-box { max-width: 640px; }
 

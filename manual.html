@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星光庭園 Lumen Garden — 攻略說明書</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #10182b; --panel: #1c2742; --panel2: #24304f; --line: #35476e;
+    --gold: #ffd97a; --ink: #eef3ff; --dim: #9fb2dc;
+    --green: #8ee08a; --blue: #9adcff; --red: #ff8a8a; --orange: #ff9a5a; --purple: #b18cff;
+  }
+  html, body { background: var(--bg); color: var(--ink);
+    font-family: "Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+    line-height: 1.75; font-size: 16px; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+  header.top { text-align: center; padding: 20px 0 8px; }
+  header.top h1 { color: var(--gold); font-size: 34px; letter-spacing: 6px;
+    text-shadow: 0 0 16px rgba(255,217,122,.4); }
+  header.top .sub { color: var(--dim); font-size: 14px; letter-spacing: 2px; margin-top: 4px; }
+  header.top .play { display: inline-block; margin-top: 16px; padding: 10px 26px; border-radius: 8px;
+    background: linear-gradient(180deg,#ffd97a,#f5a623); color: #3a2a00; font-weight: 700;
+    text-decoration: none; letter-spacing: 1px; }
+  header.top .play:hover { filter: brightness(1.06); }
+  .toc { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 20px; margin: 24px 0; }
+  .toc h2 { font-size: 15px; color: var(--dim); letter-spacing: 2px; margin-bottom: 8px; }
+  .toc ol { columns: 2; column-gap: 28px; list-style: none; counter-reset: t; }
+  .toc li { counter-increment: t; padding: 3px 0; }
+  .toc li::before { content: counter(t) "."; color: var(--gold); font-weight: 700; margin-right: 8px; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--gold); }
+  section { margin: 34px 0; }
+  h2.sec { font-size: 23px; color: var(--gold); border-left: 4px solid var(--gold);
+    padding-left: 12px; margin-bottom: 14px; letter-spacing: 1px; }
+  h3 { font-size: 17px; color: var(--blue); margin: 18px 0 6px; }
+  p { margin: 8px 0; }
+  ul, ol.steps { margin: 8px 0 8px 4px; padding-left: 22px; }
+  li { margin: 5px 0; }
+  strong { color: #fff; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 20px; margin: 14px 0; }
+  .steps.big { list-style: none; padding: 0; counter-reset: s; }
+  .steps.big > li { counter-increment: s; position: relative; padding: 12px 12px 12px 56px;
+    background: var(--panel2); border-radius: 10px; margin: 10px 0; }
+  .steps.big > li::before { content: counter(s); position: absolute; left: 14px; top: 12px;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: #3a2a00;
+    font-weight: 800; display: grid; place-items: center; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px;
+    display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--gold); white-space: nowrap; }
+  kbd { display: inline-block; background: #0d1526; border: 1px solid var(--line);
+    border-bottom-width: 2px; border-radius: 5px; padding: 1px 8px; font-family: Consolas, monospace;
+    color: var(--ink); font-size: 14px; min-width: 22px; text-align: center; }
+  .pill { display: inline-block; padding: 1px 10px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+  .p-good { background: rgba(142,224,138,.16); color: var(--green); }
+  .p-warn { background: rgba(255,154,90,.16); color: var(--orange); }
+  .p-bad  { background: rgba(255,138,138,.16); color: var(--red); }
+  .tip { border-left: 4px solid var(--green); background: var(--panel);
+    border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 12px 0; }
+  .tip::before { content: "💡 "; }
+  .warn { border-left: 4px solid var(--red); background: var(--panel);
+    border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 12px 0; }
+  .warn::before { content: "⚠️ "; }
+  .emoji-lg { font-size: 26px; vertical-align: -3px; margin-right: 4px; }
+  footer { text-align: center; color: var(--dim); font-size: 13px; margin-top: 48px;
+    border-top: 1px solid var(--line); padding-top: 20px; }
+  footer a { color: var(--gold); }
+  @media (max-width: 600px) { .toc ol { columns: 1; } header.top h1 { font-size: 26px; letter-spacing: 3px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>✨ 星光庭園 ✨</h1>
+  <div class="sub">LUMEN GARDEN — 橫向塔防 · 攻略說明書</div>
+  <a class="play" href="index.html">🎮 開始遊戲</a>
+</header>
+
+<nav class="toc">
+  <h2>目錄</h2>
+  <ol>
+    <li><a href="#goal">遊戲目標與流程</a></li>
+    <li><a href="#quickstart">快速上手：開局 SOP</a></li>
+    <li><a href="#economy">光能經濟</a></li>
+    <li><a href="#units">防禦單位圖鑑</a></li>
+    <li><a href="#enemies">敵人圖鑑</a></li>
+    <li><a href="#bomb-shovel">星光炸彈與鏟子</a></li>
+    <li><a href="#campaign">戰役模式：10 波結構</a></li>
+    <li><a href="#endless">無盡模式與最高紀錄</a></li>
+    <li><a href="#tactics">陣型與進階戰術</a></li>
+    <li><a href="#controls">操作與介面</a></li>
+    <li><a href="#faq">常見問題</a></li>
+  </ol>
+</nav>
+
+<section id="goal">
+  <h2 class="sec">遊戲目標與流程</h2>
+  <p>暗影族從草地<strong>右側</strong>進場，一路向左啃食你的防線。你的任務：在 <strong>5 列 × 9 欄</strong>的星光草地上放置防禦單位，別讓任何敵人走到最左邊的庭園深處。</p>
+  <ul>
+    <li><strong>🏆 戰役模式</strong>：擋下 10 波（含最終 Boss）即勝利</li>
+    <li><strong>♾️ 無盡模式</strong>：第 11 波起無限生波、越來越難，拚「撐到第幾波」的最高紀錄</li>
+    <li>每列有一顆 🌟 <strong>星光炸彈</strong>當最後防線——被突破時自動引爆清光該列，但<strong>每列僅此一次</strong></li>
+  </ul>
+</section>
+
+<section id="quickstart">
+  <h2 class="sec">快速上手：開局 SOP</h2>
+  <p>開場有 <strong>15 秒準備時間</strong>（畫面上方倒數），這段時間決定整場經濟。照這個順序做：</p>
+  <ol class="steps big">
+    <li><strong>先種 🍄 聚光菇</strong>——開局 150 光能先種 2 朵（第 1 欄），剩 50 留著。經濟永遠優先於火力。</li>
+    <li><strong>點擊每一顆 ✨ 光珠</strong>——天上每 9 秒掉一顆、聚光菇每 8 秒生產一顆，each +25。光珠落地 12 秒後消失（最後 3 秒會閃爍），手不要停。</li>
+    <li><strong>第一波前湊出 1~2 支 🌵 棘刺射手</strong>（各 100）放第 3 欄。第一波只有 3 隻慢行者，1 支射手配合走路時間就足夠。</li>
+    <li><strong>持續補聚光菇到 4~5 朵</strong>，之後再全力鋪火力。前 3 波的壓力都很輕，是純粹的發育期。</li>
+  </ol>
+  <div class="tip">放置後想反悔？用 🥄 鏟子移除可退回 50% 光能，早期把放歪的單位挪位置成本不高。</div>
+</section>
+
+<section id="economy">
+  <h2 class="sec">光能經濟</h2>
+  <table>
+    <tr><th>來源</th><th>頻率</th><th>產量</th><th>備註</th></tr>
+    <tr><td>☁️ 天降光珠</td><td>每 9 秒</td><td>+25</td><td>隨機位置，免費但要點</td></tr>
+    <tr><td>🍄 聚光菇</td><td>每 8 秒 / 朵</td><td>+25</td><td>光珠拋在該格右下角</td></tr>
+    <tr><td>🥄 鏟子回收</td><td>—</td><td>單位成本的 50%</td><td>殘血單位死前鏟掉能回本一半</td></tr>
+  </table>
+  <p>換算：<strong>每多一朵聚光菇 ≈ 每分鐘 +187 光能</strong>。4 朵聚光菇加上天降，每分鐘進帳約 900——足以支撐中期每波補 1~2 個單位。</p>
+  <div class="warn">光珠落地 <strong>12 秒</strong>後消失，快過期會閃爍。打到手忙腳亂時優先撿珠再操作卡牌——漏珠是最常見的隱形虧損。</div>
+</section>
+
+<section id="units">
+  <h2 class="sec">防禦單位圖鑑</h2>
+  <table>
+    <tr><th>單位</th><th>成本</th><th>冷卻</th><th>血量</th><th>功能</th><th>戰術定位</th></tr>
+    <tr><td><span class="emoji-lg">🍄</span>聚光菇</td><td>50</td><td>7s</td><td>80</td><td>每 8 秒生產一顆光珠（+25）</td><td>經濟核心。放最後排（第 1 欄），目標 4~5 朵</td></tr>
+    <tr><td><span class="emoji-lg">🌵</span>棘刺射手</td><td>100</td><td>7s</td><td>120</td><td>每 1.4 秒射一發棘刺（20 傷害）</td><td>主力輸出，DPS ≈ 14.3。每列至少 1~2 支，放第 2~3 欄</td></tr>
+    <tr><td><span class="emoji-lg">❄️</span>寒霜蓮</td><td>75</td><td>9s</td><td>100</td><td>每 2 秒射霜彈（10 傷害 + <strong>減速 50% 持續 3 秒</strong>）</td><td>控場。放射手前一欄，減速 = 讓射手多打一倍時間</td></tr>
+    <tr><td><span class="emoji-lg">🌺</span>爆炎花</td><td>150</td><td>10s</td><td>100</td><td>每 2.2 秒射火彈（主傷 26 + <strong>濺射</strong>命中點 70px 內同列敵人各 13）</td><td>清群。敵人排成串時價值最高，無盡後期必備</td></tr>
+    <tr><td><span class="emoji-lg">🪨</span>磐石守衛</td><td>50</td><td>15s</td><td><strong>500</strong></td><td>純肉盾，站著就是貢獻</td><td>放第 6~7 欄擋路。一顆能扛慢行者咬 25 口</td></tr>
+  </table>
+  <div class="tip">射手只在<strong>同一列</strong>有敵人時才開火，且沒目標時不會浪費彈藥——不用擔心空轉，但也代表冷門列的射手是閒置資產，敵人壓力偏向哪列就往哪列補。</div>
+</section>
+
+<section id="enemies">
+  <h2 class="sec">敵人圖鑑</h2>
+  <table>
+    <tr><th>敵人</th><th>血量</th><th>速度</th><th>攻擊</th><th>特性與剋制</th></tr>
+    <tr><td><span class="emoji-lg">🧟</span>暗影慢行者</td><td>200</td><td>慢</td><td>20 / 秒</td><td>大宗主力。任何射手都能處理，別為它花大錢</td></tr>
+    <tr><td><span class="emoji-lg">👺</span>暗影疾走者</td><td>130</td><td><span class="pill p-bad">快（2.6 倍）</span></td><td>20 / 秒</td><td>血少跑快，防線還沒反應就貼臉。<strong>❄️ 寒霜蓮是天敵</strong>——減速後等同慢行者</td></tr>
+    <tr><td><span class="emoji-lg">👹</span>暗影重甲兵</td><td>180 + <span class="pill p-warn">🛡️ 護甲 150</span></td><td>慢</td><td>25 / 秒</td><td>護甲先吸收全部傷害，<strong>打破前不掉血</strong>（頭上灰條是甲、綠條是血）。等效 330 血，優先集火</td></tr>
+    <tr><td><span class="emoji-lg">😈</span>暗影君王（Boss）</td><td><strong>1800</strong> + <span class="pill p-bad">🛡️ 護甲 400</span></td><td>很慢</td><td><strong>60</strong> / 1.2 秒</td><td>巨體（更早接敵、更容易被打中）。一口咬掉大半單位，磐石守衛也只能扛 10 秒——<strong>靠減速拖時間 + 全列火力速殺</strong>，別想用肉盾耗</td></tr>
+  </table>
+  <p>所有敵人的血量與護甲<strong>每波成長 6%</strong>：第 10 波的慢行者約 308 血，無盡第 20 波約 428 血。</p>
+</section>
+
+<section id="bomb-shovel">
+  <h2 class="sec">星光炸彈與鏟子</h2>
+  <h3>🌟 星光炸彈（每列一次的最後防線）</h3>
+  <ul>
+    <li>草地最左緣每列亮著一顆脈動的 🌟，代表該列炸彈<strong>還在</strong></li>
+    <li>敵人踏進最左端的瞬間<strong>自動引爆</strong>，清光該列所有敵人——不需要手動操作</li>
+    <li>引爆後該列只剩暗色 🏡，<strong>同列再被突破就直接輸</strong></li>
+  </ul>
+  <div class="warn">炸彈是保險不是戰術。刻意放敵人進來換清場只在無盡模式的絕境值得——每用掉一顆，那一列從此裸奔。</div>
+  <h3>🥄 鏟子</h3>
+  <ul>
+    <li>點鏟子 → 點單位格 = 移除並退回 <strong>50% 成本</strong>（再點一次鏟子取消）</li>
+    <li>用途：重排陣型、把殘血肉盾在死前回收、後期把多餘聚光菇換成火力位</li>
+  </ul>
+</section>
+
+<section id="campaign">
+  <h2 class="sec">戰役模式：10 波結構</h2>
+  <table>
+    <tr><th>波次</th><th>組成</th><th>注意事項</th></tr>
+    <tr><td>1~2</td><td>慢行者 3 → 5 隻</td><td>發育期。經濟優先，火力夠擋就好</td></tr>
+    <tr><td>3~4</td><td>+ 👺 疾走者混入</td><td>開始鋪 ❄️ 寒霜蓮，注意疾走者衝哪列</td></tr>
+    <tr><td>5</td><td>+ 👹 重甲兵登場（開場第一隻）</td><td>護甲要時間磨，該列火力先集中</td></tr>
+    <tr><td>6~9</td><td>三種混編，10 → 15 隻遞增</td><td>每列都要有完整火力鏈，肉盾開始上場</td></tr>
+    <tr><td>10</td><td>19 隻大浪 + <strong>😈 暗影君王壓軸</strong>（波次中段現身，有橫幅警示）</td><td>Boss 進場列立刻補寒霜蓮 + 爆炎花，其他列自動化運轉</td></tr>
+  </table>
+  <p>波與波之間有 <strong>5 秒</strong>空檔（畫面上方倒數）——這是補卡、鏟位、撿珠的黃金時間。</p>
+</section>
+
+<section id="endless">
+  <h2 class="sec">無盡模式與最高紀錄</h2>
+  <ul>
+    <li>前 10 波與戰役相同，<strong>第 11 波起公式生波</strong>：數量每波 +2（上限 30）、重甲兵占比一路爬到 40%、進場間隔壓縮到 0.8 秒</li>
+    <li><strong>每 5 波（15、20、25…）出一隻 😈 暗影君王</strong>，血量跟著波次成長無上限</li>
+    <li>敗北畫面顯示「本局撐到第 N 波」；<strong>最高紀錄</strong>存在瀏覽器（localStorage），破紀錄會亮 🏅</li>
+  </ul>
+  <div class="tip">開發時用自動遊玩的 AI bot 實測過：理想操作（光珠全撿、陣型完整）大約撐到 <strong>第 20~23 波</strong>——第 20 波的君王（約 3850 血 + 856 甲）是多數場次的天花板。超過 20 波你就贏過機器人了。</div>
+</section>
+
+<section id="tactics">
+  <h2 class="sec">陣型與進階戰術</h2>
+  <h3>標準陣型（由左至右）</h3>
+  <table>
+    <tr><th>欄位</th><th>放什麼</th><th>理由</th></tr>
+    <tr><td>第 1~2 欄</td><td>🍄 聚光菇（後期補第二排火力）</td><td>最安全的位置留給經濟</td></tr>
+    <tr><td>第 3~4 欄</td><td>🌵 棘刺射手（每列 1~2 支）</td><td>主力輸出，射程覆蓋全列</td></tr>
+    <tr><td>第 4~5 欄</td><td>❄️ 寒霜蓮 / 🌺 爆炎花</td><td>控場與清群，站射手前面一點無妨</td></tr>
+    <tr><td>第 6~7 欄</td><td>🪨 磐石守衛</td><td>擋路換輸出時間；太靠右會讓敵人繞不到就先咬</td></tr>
+    <tr><td>第 8~9 欄</td><td>留空</td><td>敵人進場緩衝區，讓射手多打幾輪白嫖傷害</td></tr>
+  </table>
+  <h3>心法</h3>
+  <ul>
+    <li><strong>減速乘輸出</strong>：寒霜蓮本身 DPS 只有 5，但讓敵人在射程裡多待一倍時間，等於全列輸出 ×2——它是輸出放大器不是輸出</li>
+    <li><strong>濺射看隊形</strong>：爆炎花打散兵虧、打成串賺。無盡後期進場間隔 0.8 秒，敵人天然排隊，一發火彈全串扣血</li>
+    <li><strong>肉盾是消耗品</strong>：磐石守衛 50 光能扛 500 血，性價比全場最高，但被咬到殘血記得鏟掉回收 25</li>
+    <li><strong>Boss 列三件套</strong>：寒霜蓮（拖）+ 爆炎花（濺射順便清雜兵）+ 前置磐石（扛 10 秒）；其他列此時應該已能自動運轉</li>
+    <li><strong>暫停是合法外掛</strong>：<kbd>P</kbd> 暫停時可以慢慢看場面想對策，手殘玩家的好朋友</li>
+  </ul>
+</section>
+
+<section id="controls">
+  <h2 class="sec">操作與介面</h2>
+  <table>
+    <tr><th>操作</th><th>方式</th></tr>
+    <tr><td>放置單位</td><td>點卡牌 → 點草地格（再點一次卡牌取消選取）</td></tr>
+    <tr><td>收集光能</td><td>直接點擊場上的 ✨ 光珠</td></tr>
+    <tr><td>移除單位</td><td>點 🥄 鏟子 → 點單位格（退 50%）</td></tr>
+    <tr><td>暫停 / 繼續</td><td><kbd>P</kbd> 或右上角 ⏸ 按鈕</td></tr>
+    <tr><td>音效開關</td><td>右上角 🔊 按鈕（音效為 Web Audio 即時合成）</td></tr>
+    <tr><td>遊戲說明</td><td>右上角 ❓ 按鈕（開啟時自動暫停）</td></tr>
+    <tr><td>手機 / 平板</td><td>全面支援觸控，操作同滑鼠點擊</td></tr>
+  </table>
+  <h3>介面判讀</h3>
+  <ul>
+    <li>卡牌變灰 = 光能不足；卡牌上的暗色遮罩由上往下退 = 冷卻中（顯示剩餘秒數）</li>
+    <li>敵人頭上：綠/黃/紅條 = 血量，上方灰條 = 護甲，右上角 🛡️ = 護甲未破</li>
+    <li>敵人腳下藍圈 = 減速中；身體閃白 = 剛受擊</li>
+    <li>畫面上方倒數 = 準備時間或下一波倒數</li>
+  </ul>
+</section>
+
+<section id="faq">
+  <h2 class="sec">常見問題</h2>
+  <div class="card">
+    <h3>Q：為什麼我的射手不開火？</h3>
+    <p>射手只攻擊<strong>同一列</strong>且在它<strong>右側</strong>的敵人。敵人在別列、或已經走過射手身後，都不會觸發。</p>
+  </div>
+  <div class="card">
+    <h3>Q：重甲兵怎麼血條都不動？</h3>
+    <p>看它頭上的<strong>灰色護甲條</strong>——傷害先扣甲，甲破了才扣血。等效總血量 330（Boss 是 2200），耐心磨或集火。</p>
+  </div>
+  <div class="card">
+    <h3>Q：敵人走到最左邊為什麼沒輸？</h3>
+    <p>該列的 🌟 星光炸彈自動引爆救了你，並清光該列敵人。注意左緣那顆星星消失了——<strong>同列第二次被突破就直接敗北</strong>。</p>
+  </div>
+  <div class="card">
+    <h3>Q：最高紀錄存在哪？換裝置會不見嗎？</h3>
+    <p>存在瀏覽器的 localStorage，同一台裝置同一瀏覽器有效；清除網站資料或換裝置會歸零。</p>
+  </div>
+  <div class="card">
+    <h3>Q：這是《植物大戰殭屍》嗎？</h3>
+    <p>不是。玩法靈感確實來自經典的橫向塔防（lane defense）類型，但所有角色、命名、數值與美術皆為原創，未使用任何官方素材。</p>
+  </div>
+</section>
+
+<footer>
+  <p><a href="index.html">🎮 回到遊戲</a> ｜ <a href="https://github.com/Ttingyu1123/lumen-garden">📦 GitHub 原始碼</a> ｜ <a href="https://tingyudeco.com/portfolio/tools/game-zombie">🗂️ 作品頁</a></p>
+  <p>星光庭園 Lumen Garden — 純 HTML/CSS/JS 原創橫向塔防</p>
+</footer>
+
+</div>
+</body>
+</html>
