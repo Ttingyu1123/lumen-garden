@@ -52,8 +52,9 @@
           <li>🌟 每列有一顆星光炸彈當最後防線，僅此一次</li>
           <li>⏸ 隨時可按 P 或右上角按鈕暫停</li>
         </ul>
-        <button id="btn-start" class="btn-main">🏆 戰役模式（10 波）</button>
+        <button id="btn-start" class="btn-main">🏆 戰役模式（選關）</button>
         <button id="btn-endless" class="btn-main btn-endless">♾️ 無盡模式</button>
+        <button id="btn-achievements" class="btn-sub">🏅 成就</button>
         <button id="btn-help-start" class="btn-sub">📖 遊戲說明</button>
         <a href="manual.html" class="btn-sub btn-link">📜 完整攻略說明書</a>
       </div>
@@ -64,8 +65,28 @@
       <div class="screen-box">
         <h2>🏆 勝利！</h2>
         <p class="screen-sub">十波暗影全數退散，庭園的星光守住了。</p>
+        <p id="win-stats" class="screen-sub"></p>
         <button id="btn-restart-win" class="btn-main">再玩一次</button>
         <button id="btn-win-endless" class="btn-main btn-endless">♾️ 挑戰無盡模式</button>
+      </div>
+    </div>
+
+    <!-- 選關畫面（卡片由 ui.js 依 LEVELS 生成） -->
+    <div id="screen-levels" class="screen hidden">
+      <div class="screen-box levels-box">
+        <h2>🗺️ 選擇關卡</h2>
+        <p class="screen-sub">每關規則不同；保留越多星光炸彈，星級越高</p>
+        <div id="level-options"></div>
+        <button id="btn-close-levels" class="btn-sub">返回</button>
+      </div>
+    </div>
+
+    <!-- 成就一覽（由 ui.js 依 ACHIEVEMENTS 生成） -->
+    <div id="screen-ach" class="screen hidden">
+      <div class="screen-box">
+        <h2>🏅 成就</h2>
+        <div id="ach-list"></div>
+        <button id="btn-close-ach" class="btn-sub">返回</button>
       </div>
     </div>
 
@@ -129,6 +150,7 @@
   <!-- 依序載入：後面的檔案依賴前面的全域定義（刻意不用 ES modules，file:// 直接可跑） -->
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/progress.js"></script>
   <script src="js/sfx.js"></script>
   <script src="js/grid.js"></script>
   <script src="js/resources.js"></script>

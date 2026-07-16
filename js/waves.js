@@ -12,7 +12,7 @@ const Waves = {
    * 血量成長沿用 enemies.js 的 WAVE_HP_GROWTH（無上限）。
    */
   getWave(index) {
-    if (index < WAVES.length) return WAVES[index];
+    if (index < WAVES.length) return this.applyLevelMods(WAVES[index], index);
 
     const E = CONFIG.ENDLESS;
     const over = index - WAVES.length + 1;   // 超出手寫表的第幾波（1-based）
@@ -37,6 +37,34 @@ const Waves = {
     // 每 BOSS_EVERY 波（第 15、20、25…）在波次中段加一隻暗影君王
     if ((index + 1) % E.BOSS_EVERY === 0) {
       spawns.push({ type: 'boss', delay: t * 0.5 });
+    }
+    return { spawns };
+  },
+
+  /**
+   * 關卡規則套在手寫波次表上（不動原表）：
+   * galeMix    → 每 3 隻慢行者換 1 疾走者、每 4 隻換 1 飛翼（確定性，無隨機）
+   * doubleBoss → 最終波在原 Boss 後 3 秒追加第二隻
+   */
+  applyLevelMods(wave, index) {
+    const mods = G.level ? G.level.mods : {};
+    const isFinal = index === WAVES.length - 1;
+    if (!mods.galeMix && !(mods.doubleBoss && isFinal)) return wave;
+
+    let spawns = wave.spawns.map(s => ({ ...s }));
+    if (mods.galeMix) {
+      let n = 0;
+      spawns = spawns.map(s => {
+        if (s.type !== 'shambler') return s;
+        n += 1;
+        if (n % 3 === 0) return { ...s, type: 'sprinter' };
+        if (n % 4 === 0) return { ...s, type: 'flyer' };
+        return s;
+      });
+    }
+    if (mods.doubleBoss && isFinal) {
+      const boss = spawns.find(s => s.type === 'boss');
+      spawns.push({ type: 'boss', delay: boss.delay + 3 });
     }
     return { spawns };
   },

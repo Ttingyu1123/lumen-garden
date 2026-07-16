@@ -6,6 +6,8 @@
 const G = {
   phase: 'start',   // 'start' | 'playing' | 'win' | 'lose'
   mode: 'campaign', // 'campaign'（10 波破關）| 'endless'（無盡）
+  level: null,      // 目前關卡定義（LEVELS 之一；無盡固定用 classic）
+  blocked: [],      // blocked[row][col] = true 表示巨石格不能種植
   paused: false,    // 暫停中（僅 playing 階段有意義）
   time: 0,          // 遊戲內累計秒數（不用 Date.now，切頁暫停不會跳波）
 
@@ -38,15 +40,21 @@ const G = {
   skyOrbTimer: 0,   // 天降光珠計時器
 };
 
-/** 重置為一場新遊戲（開始 / 再玩一次都走這裡） */
-function resetGame(mode = 'campaign') {
+/** 重置為一場新遊戲（開始 / 再玩一次都走這裡）；levelId 只對戰役有意義 */
+function resetGame(mode = 'campaign', levelId = 'classic') {
   G.mode = mode;
+  G.level = (mode === 'campaign' && LEVELS.find(l => l.id === levelId)) || LEVELS[0];
   G.time = 0;
   G.lux = CONFIG.START_LUX;
 
   G.grid = [];
+  G.blocked = [];
   for (let r = 0; r < CONFIG.ROWS; r++) {
     G.grid.push(new Array(CONFIG.COLS).fill(null));
+    G.blocked.push(new Array(CONFIG.COLS).fill(false));
+  }
+  for (const [r, c] of G.level.mods.blockedCells || []) {
+    G.blocked[r][c] = true;
   }
 
   G.units = [];

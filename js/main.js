@@ -184,6 +184,7 @@
       if (G.phase === 'win' || G.phase === 'lose') {
         Sfx.play(G.phase);
         if (G.phase === 'lose') UI.fillLoseStats();   // 撐到第幾波 + 無盡最高紀錄
+        if (G.phase === 'win') UI.fillWinStats(Progress.recordWin());   // 星級 + 成就
         UI.showScreen(G.phase);
       }
     }
@@ -194,15 +195,16 @@
 
   /* ---------------- 啟動 ---------------- */
 
-  function startGame(mode) {
+  function startGame(mode, levelId) {
     Sfx.init();                 // 需要使用者手勢後才能建 AudioContext
-    resetGame(mode);
+    resetGame(mode, levelId);
     UI.showScreen('playing');   // 隱藏所有 overlay
     UI.syncPauseButton();
     UI.updateHUD();
     UI.refreshCards();
   }
 
+  Progress.init();
   UI.init({ onStart: startGame, onTogglePause: togglePause });
   UI.showScreen('start');
   requestAnimationFrame((ts) => { lastTs = ts; requestAnimationFrame(loop); });

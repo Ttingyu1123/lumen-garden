@@ -45,6 +45,12 @@ const Renderer = {
         // 棋盤式雙色夜間草地
         ctx.fillStyle = (r + c) % 2 === 0 ? '#2c4a33' : '#26402c';
         ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
+        // 巨石格（關卡障礙）：暗底 + 山岩
+        if (G.blocked[r] && G.blocked[r][c]) {
+          ctx.fillStyle = 'rgba(10, 14, 24, .5)';
+          ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
+          this.emoji('⛰️', o.x + CONFIG.CELL_W / 2, o.y + CONFIG.CELL_H / 2, 44);
+        }
       }
     }
     // 左側防線：星光炸彈還在的列亮 🌟（最後防線），用掉的列剩暗色 🏡
@@ -94,9 +100,10 @@ const Renderer = {
       return;
     }
 
-    ctx.fillStyle = occupied ? 'rgba(255, 80, 80, .3)' : 'rgba(255, 255, 255, .22)';
+    const blocked = G.blocked[hoverCell.row][hoverCell.col];
+    ctx.fillStyle = occupied || blocked ? 'rgba(255, 80, 80, .3)' : 'rgba(255, 255, 255, .22)';
     ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
-    if (!occupied) {
+    if (!occupied && !blocked) {
       // 半透明預覽
       ctx.globalAlpha = .55;
       const c = Grid.cellCenter(hoverCell.row, hoverCell.col);

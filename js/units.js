@@ -22,6 +22,9 @@ const Units = {
     }
 
     // 格子檢查
+    if (G.blocked[row][col]) {
+      return { ok: false, reason: '巨石上不能種植' };
+    }
     if (Grid.isOccupied(row, col)) {
       return { ok: false, reason: '這格已經有單位了' };
     }
@@ -79,6 +82,7 @@ const Units = {
     const c = Grid.cellCenter(row, col);
     G.floaters.push({ x: c.x, y: c.y - 20, text: `⬆ Lv${unit.level}`, age: 0 });
     Sfx.play('place');
+    if (unit.level >= CONFIG.UPGRADE.MAX_LEVEL) Progress.unlock('max_unit');
     return { ok: true, level: unit.level };
   },
 
@@ -156,7 +160,12 @@ const Units = {
     const i = G.units.indexOf(u);
     if (i !== -1) G.units.splice(i, 1);
     Sfx.play('bomb');
+    const hadBoss = victims.some(e => e.typeId === 'boss');
     for (const e of victims) Enemies.damage(e, dmg);
+    // 地雷擊殺 Boss 成就：炸完場上少了那隻 Boss 才算
+    if (hadBoss && !G.enemies.some(e => e.typeId === 'boss' && victims.includes(e))) {
+      Progress.unlock('mine_boss');
+    }
   },
 
   /** 鏟除單位：退回 50% 成本。回傳 { ok } 或 { ok:false, reason } */

@@ -26,13 +26,23 @@ const UI = {
 
     this.buildCardBar();
     this.buildHelp();
+    this.onStart = handlers.onStart;
 
-    // 開始 / 重開按鈕 → 各自對應模式；敗北重開沿用本局模式
-    document.getElementById('btn-start').addEventListener('click', () => handlers.onStart('campaign'));
+    // 戰役 → 先開選關畫面；無盡直接開；重開沿用本局模式與關卡
+    document.getElementById('btn-start').addEventListener('click', () => this.showLevelSelect());
+    document.getElementById('btn-close-levels').addEventListener('click', () => {
+      document.getElementById('screen-levels').classList.add('hidden');
+    });
     document.getElementById('btn-endless').addEventListener('click', () => handlers.onStart('endless'));
-    document.getElementById('btn-restart-win').addEventListener('click', () => handlers.onStart('campaign'));
+    document.getElementById('btn-restart-win').addEventListener('click', () => handlers.onStart('campaign', G.level.id));
     document.getElementById('btn-win-endless').addEventListener('click', () => handlers.onStart('endless'));
-    document.getElementById('btn-restart-lose').addEventListener('click', () => handlers.onStart(G.mode));
+    document.getElementById('btn-restart-lose').addEventListener('click', () => handlers.onStart(G.mode, G.level.id));
+
+    // 成就一覽
+    document.getElementById('btn-achievements').addEventListener('click', () => this.showAchievements());
+    document.getElementById('btn-close-ach').addEventListener('click', () => {
+      document.getElementById('screen-ach').classList.add('hidden');
+    });
 
     // 暫停 / 繼續
     this.els.btnPause.addEventListener('click', handlers.onTogglePause);
@@ -161,6 +171,7 @@ const UI = {
   updateHUD() {
     this.els.luxCount.textContent = G.lux;
     this.els.waveLabel.textContent = Waves.label();
+    if (G.phase === 'playing' && G.lux >= 500) Progress.unlock('tycoon');
   },
 
   /** 暫停按鈕圖示與狀態同步 */
@@ -196,6 +207,7 @@ const UI = {
    */
   fillLoseStats() {
     const reached = Math.max(1, G.wave.index + 1);
+    Progress.recordLose(reached);
     let html = `本局撐到 <b>第 ${reached} 波</b>`;
     if (G.mode === 'endless') {
       const KEY = 'lumenGarden.bestWave';
@@ -208,6 +220,53 @@ const UI = {
       }
     }
     document.getElementById('lose-stats').innerHTML = html;
+  },
+
+  /** 選關畫面：每次打開重建卡片（星級即時反映最新紀錄） */
+  showLevelSelect() {
+    const box = document.getElementById('level-options');
+    box.innerHTML = '';
+    for (const lv of LEVELS) {
+      const stars = Progress.getStars(lv.id);
+      const btn = document.createElement('button');
+      btn.className = 'perk-card level-card';
+      btn.innerHTML = `
+        <div class="perk-emoji">${lv.emoji}</div>
+        <div class="perk-name">${lv.name}</div>
+        <div class="perk-desc">${lv.desc}</div>
+        <div class="level-stars">${'⭐'.repeat(stars) || '☆☆☆'}</div>
+      `;
+      btn.addEventListener('click', () => {
+        document.getElementById('screen-levels').classList.add('hidden');
+        this.onStart('campaign', lv.id);
+      });
+      box.appendChild(btn);
+    }
+    document.getElementById('screen-levels').classList.remove('hidden');
+  },
+
+  /** 成就一覽：未解鎖顯示灰階 */
+  showAchievements() {
+    const box = document.getElementById('ach-list');
+    box.innerHTML = '';
+    for (const a of ACHIEVEMENTS) {
+      const unlocked = Progress.isUnlocked(a.id);
+      const div = document.createElement('div');
+      div.className = 'ach-item' + (unlocked ? ' unlocked' : '');
+      div.innerHTML = `
+        <span class="ach-emoji">${unlocked ? a.emoji : '🔒'}</span>
+        <span class="ach-text"><b>${a.name}</b><br>${a.desc}</span>
+      `;
+      box.appendChild(div);
+    }
+    document.getElementById('screen-ach').classList.remove('hidden');
+  },
+
+  /** 勝利結算：星級 + 關卡名（在切到勝利畫面前呼叫） */
+  fillWinStats(stars) {
+    document.getElementById('win-stats').innerHTML =
+      `${G.level.emoji} ${G.level.name} — 評價 <b>${'⭐'.repeat(stars)}</b>` +
+      (stars < 3 ? '<br><small>保留越多星光炸彈，星級越高</small>' : '<br><small>完美防線！</small>');
   },
 
   /** 無盡增益三選一：生成選項卡並顯示（點擊 → Perks.take 解凍） */

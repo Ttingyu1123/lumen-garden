@@ -268,6 +268,42 @@ const ENEMY_TYPES = {
 };
 
 /* ------------------------------------------------------------
+   關卡表（戰役模式）：同一份 10 波波次表 + 各關規則變化
+   mods 由各模組讀取：
+     noSkyOrbs    → resources.js 天上不掉光珠
+     blockedCells → state.js 建 G.blocked，units.js 禁止種植
+     galeMix      → waves.js 把部分慢行者換成疾走者/飛翼
+     doubleBoss   → waves.js 最終波追加第二隻暗影君王
+   ------------------------------------------------------------ */
+const LEVELS = [
+  {
+    id: 'classic', emoji: '🌙', name: '星光初戰',
+    desc: '經典之夜：擋下 10 波暗影大軍',
+    mods: {},
+  },
+  {
+    id: 'moonless', emoji: '🌑', name: '無月之夜',
+    desc: '天上不掉光珠，經濟全靠聚光菇',
+    mods: { noSkyOrbs: true },
+  },
+  {
+    id: 'rocky', emoji: '⛰️', name: '巨石陣',
+    desc: '戰場散布不能種植的巨石，陣型受限',
+    mods: { blockedCells: [[0, 3], [1, 6], [2, 4], [3, 2], [4, 5], [2, 7]] },
+  },
+  {
+    id: 'gale', emoji: '🌪️', name: '疾風夜襲',
+    desc: '大量慢行者被疾走者與飛翼取代，節奏更快',
+    mods: { galeMix: true },
+  },
+  {
+    id: 'dusk', emoji: '👿', name: '雙王之夜',
+    desc: '最終波兩隻暗影君王同時壓境',
+    mods: { doubleBoss: true },
+  },
+];
+
+/* ------------------------------------------------------------
    波次表：共 10 波
    spawnList 把 [進場秒數, 敵種] 壓成 { type, delay }
    後期靠三件事加壓：數量、重甲比例、WAVE_HP_GROWTH 血量成長

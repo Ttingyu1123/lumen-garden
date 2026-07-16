@@ -35,11 +35,13 @@ const Resources = {
 
   /** 每幀更新：天降計時、下落、落地老化 */
   update(dt) {
-    // 定時天降
-    G.skyOrbTimer += dt;
-    if (G.skyOrbTimer >= CONFIG.SKY_ORB_INTERVAL) {
-      G.skyOrbTimer = 0;
-      this.spawnSkyOrb();
+    // 定時天降（無月之夜關卡停掉，經濟全靠聚光菇）
+    if (!G.level.mods.noSkyOrbs) {
+      G.skyOrbTimer += dt;
+      if (G.skyOrbTimer >= CONFIG.SKY_ORB_INTERVAL) {
+        G.skyOrbTimer = 0;
+        this.spawnSkyOrb();
+      }
     }
 
     for (const orb of G.orbs) {
