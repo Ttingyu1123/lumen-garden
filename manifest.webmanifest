@@ -1,0 +1,16 @@
+{
+  "name": "星光庭園 Lumen Garden",
+  "short_name": "星光庭園",
+  "description": "原創橫向塔防：用星光植物擋下暗影大軍",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#10182b",
+  "theme_color": "#10182b",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

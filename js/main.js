@@ -204,6 +204,11 @@
     UI.refreshCards();
   }
 
+  // PWA：僅在 http(s) 註冊（file:// 直接開仍可玩，只是沒有離線快取）
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
   Progress.init();
   UI.init({ onStart: startGame, onTogglePause: togglePause });
   UI.showScreen('start');
