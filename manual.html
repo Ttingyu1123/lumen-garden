@@ -88,9 +88,11 @@
     <li><a href="#economy">光能經濟</a></li>
     <li><a href="#units">防禦單位圖鑑</a></li>
     <li><a href="#enemies">敵人圖鑑</a></li>
+    <li><a href="#upgrade">單位升級</a></li>
     <li><a href="#bomb-shovel">星光炸彈與鏟子</a></li>
-    <li><a href="#campaign">戰役模式：10 波結構</a></li>
-    <li><a href="#endless">無盡模式與最高紀錄</a></li>
+    <li><a href="#campaign">戰役模式：5 關卡與星級</a></li>
+    <li><a href="#endless">無盡模式：增益與最高紀錄</a></li>
+    <li><a href="#progress">成就與離線遊玩</a></li>
     <li><a href="#tactics">陣型與進階戰術</a></li>
     <li><a href="#controls">操作與介面</a></li>
     <li><a href="#faq">常見問題</a></li>
@@ -101,8 +103,8 @@
   <h2 class="sec">遊戲目標與流程</h2>
   <p>暗影族從草地<strong>右側</strong>進場，一路向左啃食你的防線。你的任務：在 <strong>5 列 × 9 欄</strong>的星光草地上放置防禦單位，別讓任何敵人走到最左邊的庭園深處。</p>
   <ul>
-    <li><strong>🏆 戰役模式</strong>：擋下 10 波（含最終 Boss）即勝利</li>
-    <li><strong>♾️ 無盡模式</strong>：第 11 波起無限生波、越來越難，拚「撐到第幾波」的最高紀錄</li>
+    <li><strong>🏆 戰役模式</strong>：5 個規則各異的關卡，各擋下 10 波（含最終 Boss）即勝利，依剩餘炸彈評 1~3 星</li>
+    <li><strong>♾️ 無盡模式</strong>：第 11 波起無限生波、越來越難，每 5 波可挑一個增益，拚「撐到第幾波」的最高紀錄</li>
     <li>每列有一顆 🌟 <strong>星光炸彈</strong>當最後防線——被突破時自動引爆清光該列，但<strong>每列僅此一次</strong></li>
   </ul>
 </section>
@@ -139,9 +141,25 @@
     <tr><td><span class="emoji-lg">🌵</span>棘刺射手</td><td>100</td><td>7s</td><td>120</td><td>每 1.4 秒射一發棘刺（20 傷害）</td><td>主力輸出，DPS ≈ 14.3。每列至少 1~2 支，放第 2~3 欄</td></tr>
     <tr><td><span class="emoji-lg">❄️</span>寒霜蓮</td><td>75</td><td>9s</td><td>100</td><td>每 2 秒射霜彈（10 傷害 + <strong>減速 50% 持續 3 秒</strong>）</td><td>控場。放射手前一欄，減速 = 讓射手多打一倍時間</td></tr>
     <tr><td><span class="emoji-lg">🌺</span>爆炎花</td><td>150</td><td>10s</td><td>100</td><td>每 2.2 秒射火彈（主傷 26 + <strong>濺射</strong>命中點 70px 內同列敵人各 13）</td><td>清群。敵人排成串時價值最高，無盡後期必備</td></tr>
-    <tr><td><span class="emoji-lg">🪨</span>磐石守衛</td><td>50</td><td>15s</td><td><strong>500</strong></td><td>純肉盾，站著就是貢獻</td><td>放第 6~7 欄擋路。一顆能扛慢行者咬 25 口</td></tr>
+    <tr><td><span class="emoji-lg">🪨</span>磐石守衛</td><td>50</td><td>15s</td><td><strong>500</strong></td><td>純肉盾，站著就是貢獻</td><td>放第 6~7 欄擋路。一顆能扛慢行者咬 25 口。<strong>注意：擋不住 🦇 飛翼，Boss 對它 4 倍傷害</strong></td></tr>
+    <tr><td><span class="emoji-lg">🎋</span>貫月竹</td><td>200</td><td>12s</td><td>100</td><td>每 1.8 秒射竹槍<strong>貫穿整列</strong>，路徑上每隻敵人各吃 22</td><td>排隊大軍剋星。敵人越密越賺，無盡後期一發打 5+ 隻</td></tr>
+    <tr><td><span class="emoji-lg">💥</span>星火地雷</td><td><strong>25</strong></td><td>18s</td><td>60</td><td>佈署 1.5 秒後警戒，敵人踩到即爆（<strong>250</strong> 範圍傷害）</td><td>便宜救急。防線破口丟一顆、Boss 進場路上預埋。<strong>對飛行無效</strong></td></tr>
   </table>
   <div class="tip">射手只在<strong>同一列</strong>有敵人時才開火，且沒目標時不會浪費彈藥——不用擔心空轉，但也代表冷門列的射手是閒置資產，敵人壓力偏向哪列就往哪列補。</div>
+</section>
+
+<section id="upgrade">
+  <h2 class="sec">單位升級</h2>
+  <p><strong>沒選卡牌時，直接點場上的單位</strong>就能花光能升級，最高 <strong>Lv3</strong>（頭上出現 ⭐；滑鼠懸停會顯示升級費用）。</p>
+  <table>
+    <tr><th>項目</th><th>規則</th></tr>
+    <tr><td>費用</td><td>升 Lv2 = 基礎成本 ×1、升 Lv3 = 基礎成本 ×2（例：棘刺射手 100 → 升滿共 300）</td></tr>
+    <tr><td>血量</td><td>每級 ×1.5，<strong>升級當下回滿血</strong>——殘血單位升級 = 順便補血</td></tr>
+    <tr><td>射手</td><td>傷害每級 ×1.5（Lv3 = 2.25 倍）</td></tr>
+    <tr><td>聚光菇</td><td>生產間隔每級 ×0.7（Lv3 從 8 秒縮到約 3.9 秒）</td></tr>
+    <tr><td>鏟子退款</td><td>按<strong>總投資</strong>（含升級費）退 50%</td></tr>
+  </table>
+  <div class="tip">升級 vs 加格子：一支 Lv2 射手 = 2 支 Lv1 的傷害但只占一格、只挨一份啃咬。<strong>格子緊或該列已有肉盾保護時升級划算；要覆蓋新列時加格子划算。</strong></div>
 </section>
 
 <section id="enemies">
@@ -151,7 +169,9 @@
     <tr><td><span class="emoji-lg">🧟</span>暗影慢行者</td><td>200</td><td>慢</td><td>20 / 秒</td><td>大宗主力。任何射手都能處理，別為它花大錢</td></tr>
     <tr><td><span class="emoji-lg">👺</span>暗影疾走者</td><td>130</td><td><span class="pill p-bad">快（2.6 倍）</span></td><td>20 / 秒</td><td>血少跑快，防線還沒反應就貼臉。<strong>❄️ 寒霜蓮是天敵</strong>——減速後等同慢行者</td></tr>
     <tr><td><span class="emoji-lg">👹</span>暗影重甲兵</td><td>180 + <span class="pill p-warn">🛡️ 護甲 150</span></td><td>慢</td><td>25 / 秒</td><td>護甲先吸收全部傷害，<strong>打破前不掉血</strong>（頭上灰條是甲、綠條是血）。等效 330 血，優先集火</td></tr>
-    <tr><td><span class="emoji-lg">😈</span>暗影君王（Boss）</td><td><strong>1800</strong> + <span class="pill p-bad">🛡️ 護甲 400</span></td><td>很慢</td><td><strong>60</strong> / 1.2 秒</td><td>巨體（更早接敵、更容易被打中）。一口咬掉大半單位，磐石守衛也只能扛 10 秒——<strong>靠減速拖時間 + 全列火力速殺</strong>，別想用肉盾耗</td></tr>
+    <tr><td><span class="emoji-lg">🦇</span>暗影飛翼</td><td>100</td><td><span class="pill p-bad">快（2 倍）</span></td><td>—</td><td><strong>飛越所有地面單位</strong>直撲防線——肉盾、地雷都攔不住，只有射手打得到。每列都要有射手，否則一隻飛翼就換掉一顆炸彈</td></tr>
+    <tr><td><span class="emoji-lg">🫠</span>暗影裂變體</td><td>160</td><td>中</td><td>15 / 秒</td><td><strong>死亡時分裂成 2 隻 👾 小裂體</strong>（60 血、速度快）。單體高傷打它虧，🌺 濺射與 🎋 貫穿是解</td></tr>
+    <tr><td><span class="emoji-lg">😈</span>暗影君王（Boss）</td><td><strong>1800</strong> + <span class="pill p-bad">🛡️ 護甲 400</span></td><td>很慢</td><td><strong>60</strong> / 1.2 秒</td><td>巨體（更早接敵、更容易被打中）。<strong>每 15 秒召喚 2 隻爪牙</strong>（有橫幅警示）；對磐石守衛<strong>4 倍碎石傷害</strong>（一口 240）——別想用肉盾耗，<strong>靠減速拖時間 + 全列火力速殺</strong></td></tr>
   </table>
   <p>所有敵人的血量與護甲<strong>每波成長 6%</strong>：第 10 波的慢行者約 308 血，無盡第 20 波約 428 血。</p>
 </section>
@@ -173,26 +193,60 @@
 </section>
 
 <section id="campaign">
-  <h2 class="sec">戰役模式：10 波結構</h2>
+  <h2 class="sec">戰役模式：5 關卡與星級</h2>
+  <table>
+    <tr><th>關卡</th><th>規則變化</th><th>對策</th></tr>
+    <tr><td>🌙 星光初戰</td><td>經典之夜，無特殊規則</td><td>照標準陣型打，新手從這關起步</td></tr>
+    <tr><td>🌑 無月之夜</td><td><strong>天上不掉光珠</strong>，經濟全靠聚光菇</td><td>開局聚光菇要多鋪 1~2 朵並儘早升級，前期火力寧缺勿濫</td></tr>
+    <tr><td>⛰️ 巨石陣</td><td>戰場 6 格巨石<strong>不能種植</strong></td><td>先看石頭位置再規劃：被卡住的列提早上肉盾補償</td></tr>
+    <tr><td>🌪️ 疾風夜襲</td><td>大量慢行者換成<strong>疾走者與飛翼</strong></td><td>寒霜蓮提早鋪滿，每列必備射手（飛翼無視肉盾）</td></tr>
+    <tr><td>👿 雙王之夜</td><td>最終波<strong>兩隻暗影君王</strong>（間隔 3 秒）</td><td>第 9 波結束前把兩三列升到 Lv2 火力，地雷預埋 Boss 路線</td></tr>
+  </table>
+  <p><strong>星級</strong>：通關 1★、剩 3 顆以上炸彈 2★、5 顆全保 3★——紀錄存在選關畫面，只升不降。</p>
+  <h3>10 波結構（各關共用）</h3>
   <table>
     <tr><th>波次</th><th>組成</th><th>注意事項</th></tr>
     <tr><td>1~2</td><td>慢行者 3 → 5 隻</td><td>發育期。經濟優先，火力夠擋就好</td></tr>
     <tr><td>3~4</td><td>+ 👺 疾走者混入</td><td>開始鋪 ❄️ 寒霜蓮，注意疾走者衝哪列</td></tr>
     <tr><td>5</td><td>+ 👹 重甲兵登場（開場第一隻）</td><td>護甲要時間磨，該列火力先集中</td></tr>
-    <tr><td>6~9</td><td>三種混編，10 → 15 隻遞增</td><td>每列都要有完整火力鏈，肉盾開始上場</td></tr>
-    <tr><td>10</td><td>19 隻大浪 + <strong>😈 暗影君王壓軸</strong>（波次中段現身，有橫幅警示）</td><td>Boss 進場列立刻補寒霜蓮 + 爆炎花，其他列自動化運轉</td></tr>
+    <tr><td>6</td><td>+ 🦇 飛翼登場（2 隻）</td><td><strong>檢查每列是否都有射手</strong>——飛翼飛越肉盾直撲防線</td></tr>
+    <tr><td>7~9</td><td>+ 🫠 裂變體，混編 11 → 18 隻遞增</td><td>爆炎花 / 貫月竹處理裂變體，肉盾全面上場</td></tr>
+    <tr><td>10</td><td>22 隻大浪 + <strong>😈 暗影君王壓軸</strong>（波次中段現身，有橫幅警示）</td><td>Boss 進場列立刻補寒霜蓮 + 爆炎花，提防它召喚的爪牙</td></tr>
   </table>
-  <p>波與波之間有 <strong>5 秒</strong>空檔（畫面上方倒數）——這是補卡、鏟位、撿珠的黃金時間。</p>
+  <p>波與波之間有 <strong>5 秒</strong>空檔（畫面上方倒數）——這是補卡、鏟位、升級、撿珠的黃金時間。</p>
 </section>
 
 <section id="endless">
-  <h2 class="sec">無盡模式與最高紀錄</h2>
+  <h2 class="sec">無盡模式：增益與最高紀錄</h2>
   <ul>
-    <li>前 10 波與戰役相同，<strong>第 11 波起公式生波</strong>：數量每波 +2（上限 30）、重甲兵占比一路爬到 40%、進場間隔壓縮到 0.8 秒</li>
+    <li>前 10 波與經典戰役相同，<strong>第 11 波起公式生波</strong>：數量每波 +2（上限 30）、重甲兵占比一路爬到 40%、進場間隔壓縮到 0.8 秒；<strong>第 13 波起飛翼與裂變體加入混編</strong></li>
     <li><strong>每 5 波（15、20、25…）出一隻 😈 暗影君王</strong>，血量跟著波次成長無上限</li>
+    <li><strong>✨ 星光祝福</strong>：每清完 5 波（5、10、15…）跳出<strong>增益三選一</strong>，效果持續整場且可疊加——射速、傷害、光珠加值、冷卻縮短、補炸彈、單位血量、減速延長、立即光能共 8 種</li>
     <li>敗北畫面顯示「本局撐到第 N 波」；<strong>最高紀錄</strong>存在瀏覽器（localStorage），破紀錄會亮 🏅</li>
   </ul>
-  <div class="tip">開發時用自動遊玩的 AI bot 實測過：理想操作（光珠全撿、陣型完整）大約撐到 <strong>第 20~23 波</strong>——第 20 波的君王（約 3850 血 + 856 甲）是多數場次的天花板。超過 20 波你就贏過機器人了。</div>
+  <div class="tip"><strong>選增益的思路</strong>：經濟未成形（前 10 波）優先「豐收月光 / 立即光能」；中期拿「射速 / 傷害」疊輸出；炸彈用掉了就抓緊「防線重鑄」——空列裸奔比少 20% 傷害危險得多。</div>
+  <div class="tip">開發時用自動遊玩的 AI bot 實測過（增益系統上線前）：理想操作大約撐到 <strong>第 20~23 波</strong>。現在有增益疊加，上限比這高——超過 23 波你就正式超越機器人了。</div>
+</section>
+
+<section id="progress">
+  <h2 class="sec">成就與離線遊玩</h2>
+  <h3>🏅 成就（開始畫面點「成就」查看）</h3>
+  <table>
+    <tr><th>成就</th><th>條件</th></tr>
+    <tr><td>🏆 首勝</td><td>首次通關任一戰役關卡</td></tr>
+    <tr><td>🌟 完美防線</td><td>通關且 5 顆星光炸彈全數保留</td></tr>
+    <tr><td>🗺️ 庭園守護者</td><td>通關全部 5 個戰役關卡</td></tr>
+    <tr><td>⭐ 究極培育</td><td>將任一單位升到 Lv3</td></tr>
+    <tr><td>💥 地雷戰術</td><td>用星火地雷擊殺暗影君王</td></tr>
+    <tr><td>💰 光能大亨</td><td>同時持有 500 光能</td></tr>
+    <tr><td>🌊 無盡行者 / 🌀 無盡傳說</td><td>無盡模式撐到第 15 / 25 波</td></tr>
+  </table>
+  <h3>📱 安裝到手機（PWA）</h3>
+  <ul>
+    <li>iPhone：Safari 開啟遊戲 → 分享 → <strong>加入主畫面</strong>；Android：Chrome 會自動提示安裝</li>
+    <li>安裝後<strong>離線也能玩</strong>（資源快取在裝置上），全螢幕無瀏覽器邊框</li>
+    <li>星級、成就、無盡紀錄都存在裝置的 localStorage——清除網站資料會歸零</li>
+  </ul>
 </section>
 
 <section id="tactics">
@@ -211,7 +265,9 @@
     <li><strong>減速乘輸出</strong>：寒霜蓮本身 DPS 只有 5，但讓敵人在射程裡多待一倍時間，等於全列輸出 ×2——它是輸出放大器不是輸出</li>
     <li><strong>濺射看隊形</strong>：爆炎花打散兵虧、打成串賺。無盡後期進場間隔 0.8 秒，敵人天然排隊，一發火彈全串扣血</li>
     <li><strong>肉盾是消耗品</strong>：磐石守衛 50 光能扛 500 血，性價比全場最高，但被咬到殘血記得鏟掉回收 25</li>
-    <li><strong>Boss 列三件套</strong>：寒霜蓮（拖）+ 爆炎花（濺射順便清雜兵）+ 前置磐石（扛 10 秒）；其他列此時應該已能自動運轉</li>
+    <li><strong>飛翼改寫佈陣鐵律</strong>：第 6 波起「每列至少一支射手」從建議變成硬需求——飛翼無視肉盾與地雷，沒射手的列等於白給</li>
+    <li><strong>裂變體先減速再殺</strong>：它死在哪、小裂體就從哪衝刺。讓它死在寒霜蓮射程內，小裂體一出生就是慢動作</li>
+    <li><strong>Boss 列三件套</strong>：寒霜蓮（拖）+ 爆炎花（濺射順便清雜兵）+ 地雷預埋（250 直傷）；磐石守衛對 Boss 只值 2 口（4 倍碎石），別浪費</li>
     <li><strong>暫停是合法外掛</strong>：<kbd>P</kbd> 暫停時可以慢慢看場面想對策，手殘玩家的好朋友</li>
   </ul>
 </section>
@@ -221,8 +277,9 @@
   <table>
     <tr><th>操作</th><th>方式</th></tr>
     <tr><td>放置單位</td><td>點卡牌 → 點草地格（再點一次卡牌取消選取）</td></tr>
+    <tr><td><strong>升級單位</strong></td><td>沒選卡牌時直接點場上單位（懸停顯示費用；最高 Lv3）</td></tr>
     <tr><td>收集光能</td><td>直接點擊場上的 ✨ 光珠</td></tr>
-    <tr><td>移除單位</td><td>點 🥄 鏟子 → 點單位格（退 50%）</td></tr>
+    <tr><td>移除單位</td><td>點 🥄 鏟子 → 點單位格（退總投資 50%）</td></tr>
     <tr><td>暫停 / 繼續</td><td><kbd>P</kbd> 或右上角 ⏸ 按鈕</td></tr>
     <tr><td>音效開關</td><td>右上角 🔊 按鈕（音效為 Web Audio 即時合成）</td></tr>
     <tr><td>遊戲說明</td><td>右上角 ❓ 按鈕（開啟時自動暫停）</td></tr>
@@ -254,6 +311,14 @@
   <div class="card">
     <h3>Q：最高紀錄存在哪？換裝置會不見嗎？</h3>
     <p>存在瀏覽器的 localStorage，同一台裝置同一瀏覽器有效；清除網站資料或換裝置會歸零。</p>
+  </div>
+  <div class="card">
+    <h3>Q：飛翼怎麼擋？肉盾沒用？</h3>
+    <p>🦇 飛翼<strong>飛越所有地面單位</strong>，肉盾與地雷都攔不住，只有射手的投射物打得到。牠血只有 100，一支棘刺射手 5 發就解決——重點是<strong>每列都要有射手</strong>。</p>
+  </div>
+  <div class="card">
+    <h3>Q：升級和多放一個單位哪個划算？</h3>
+    <p>看情境：格子緊、該列有肉盾保護 → 升級（同格雙倍輸出）；要覆蓋沒火力的列 → 加格子。聚光菇升滿產能約 2 倍，經濟關（無月之夜）幾乎必升。</p>
   </div>
   <div class="card">
     <h3>Q：這是《植物大戰殭屍》嗎？</h3>
