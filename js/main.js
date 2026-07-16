@@ -176,7 +176,7 @@
   function loop(ts) {
     const dt = Math.min((ts - lastTs) / 1000, 0.05);  // 切頁回來 dt 上限 50ms，避免跳幀穿模
     lastTs = ts;
-    if (G.phase === 'playing' && !G.paused) update(dt);
+    if (G.phase === 'playing' && !G.paused && !G.perkChoice) update(dt);   // 增益三選一時凍結
 
     // phase 轉換統一在這裡處理：不管誰改了 G.phase（遊戲邏輯或測試腳本）都會生效
     if (G.phase !== handledPhase) {

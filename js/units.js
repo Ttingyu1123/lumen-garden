@@ -31,13 +31,14 @@ const Units = {
       return { ok: false, reason: `光能不足（需要 ${def.cost}）` };
     }
 
+    const baseHp = Math.round(def.hp * G.perks.unitHpMult);
     const unit = {
       typeId,
       def,
       row,
       col,
-      hp: def.hp,
-      maxHp: def.hp,
+      hp: baseHp,
+      maxHp: baseHp,
       level: 1,           // 升級等級（點擊場上單位升級，最高 UPGRADE.MAX_LEVEL）
       invested: def.cost, // 累計投資（含升級費），鏟除退款以此計算
       timer: 0,   // 生產 / 射擊共用計時器
@@ -45,7 +46,7 @@ const Units = {
     };
     G.grid[row][col] = unit;
     G.units.push(unit);
-    G.cardReadyAt[typeId] = G.time + def.cooldown;
+    G.cardReadyAt[typeId] = G.time + def.cooldown * G.perks.cooldownMult;
     Sfx.play('place');
     return { ok: true };
   },
@@ -70,7 +71,9 @@ const Units = {
     }
     unit.level += 1;
     unit.invested += cost;
-    unit.maxHp = Math.round(unit.def.hp * Math.pow(CONFIG.UPGRADE.HP_MULT, unit.level - 1));
+    unit.maxHp = Math.round(
+      unit.def.hp * Math.pow(CONFIG.UPGRADE.HP_MULT, unit.level - 1) * G.perks.unitHpMult
+    );
     unit.hp = unit.maxHp;   // 升級回滿血
     unit.age = 0;           // 重播彈出動畫當升級回饋
     const c = Grid.cellCenter(row, col);
@@ -107,14 +110,16 @@ const Units = {
         );
         if (hasTarget) {
           u.timer += dt;
-          if (u.timer >= u.def.fireInterval) {
+          if (u.timer >= u.def.fireInterval * G.perks.fireRateMult) {
             u.timer = 0;
-            // 等級加成套在投射物規格上（不動 def 原本資料）
-            const mult = this.damageMult(u);
-            const spec = mult === 1 ? u.def.projectile : {
-              ...u.def.projectile,
-              damage: Math.round(u.def.projectile.damage * mult),
-              splashDamage: Math.round((u.def.projectile.splashDamage || 0) * mult),
+            // 等級與增益加成套在投射物規格上（不動 def 原本資料）
+            const base = u.def.projectile;
+            const mult = this.damageMult(u) * G.perks.damageMult;
+            const spec = {
+              ...base,
+              damage: Math.round(base.damage * mult),
+              splashDamage: Math.round((base.splashDamage || 0) * mult),
+              slow: base.slow ? base.slow + G.perks.slowBonus : 0,
             };
             Projectiles.spawn(u.row, c.x + 20, c.y - 10, spec);
             Sfx.play(u.def.sfx || 'shoot');
@@ -142,7 +147,7 @@ const Units = {
   /** 引爆地雷：同列半徑內地面敵人全吃傷害，地雷消失（無退款） */
   explodeMine(u) {
     const c = Grid.cellCenter(u.row, u.col);
-    const dmg = Math.round(u.def.mine.damage * this.damageMult(u));
+    const dmg = Math.round(u.def.mine.damage * this.damageMult(u) * G.perks.damageMult);
     const victims = G.enemies.filter(e =>
       !e.def.flying && e.row === u.row && Math.abs(e.x - c.x) <= u.def.mine.radius
     );

@@ -210,6 +210,29 @@ const UI = {
     document.getElementById('lose-stats').innerHTML = html;
   },
 
+  /** 無盡增益三選一：生成選項卡並顯示（點擊 → Perks.take 解凍） */
+  showPerkChoice(perks) {
+    const box = document.getElementById('perk-options');
+    box.innerHTML = '';
+    for (const perk of perks) {
+      const btn = document.createElement('button');
+      btn.className = 'perk-card';
+      btn.innerHTML = `
+        <div class="perk-emoji">${perk.emoji}</div>
+        <div class="perk-name">${perk.name}</div>
+        <div class="perk-desc">${perk.desc}</div>
+      `;
+      btn.addEventListener('click', () => Perks.take(perk));
+      box.appendChild(btn);
+    }
+    document.getElementById('screen-perk').classList.remove('hidden');
+    Sfx.play('wave');
+  },
+
+  hidePerkChoice() {
+    document.getElementById('screen-perk').classList.add('hidden');
+  },
+
   /** 依遊戲階段切換全螢幕畫面 */
   showScreen(phase) {
     this.els.screenStart.classList.toggle('hidden', phase !== 'start');

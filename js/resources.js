@@ -17,7 +17,7 @@ const Resources = {
       targetY: c.y,       // 落到目標列的中心
       landed: false,
       age: 0,             // 落地後開始計時
-      value: CONFIG.ORB_VALUE,
+      value: CONFIG.ORB_VALUE + G.perks.orbBonus,
     });
   },
 
@@ -29,7 +29,7 @@ const Resources = {
       targetY: y + 26 + (Math.random() * 8 - 4),
       landed: false,
       age: 0,
-      value: CONFIG.ORB_VALUE,
+      value: CONFIG.ORB_VALUE + G.perks.orbBonus,
     });
   },
 

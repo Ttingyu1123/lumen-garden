@@ -87,6 +87,11 @@ const Waves = {
           G.phase = 'win';
           return;
         }
+        // 無盡：每清完 PERKS.EVERY 波跳增益三選一（遊戲凍結至選完）
+        if (G.mode === 'endless' && (w.index + 1) % CONFIG.PERKS.EVERY === 0) {
+          G.perkChoice = Perks.roll(CONFIG.PERKS.CHOICES);
+          UI.showPerkChoice(G.perkChoice);
+        }
       }
       if (G.time - w.clearedAt >= CONFIG.NEXT_WAVE_DELAY) {
         this.startWave(w.index + 1);

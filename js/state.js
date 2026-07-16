@@ -23,6 +23,9 @@ const G = {
   cardReadyAt: {},      // typeId -> 遊戲時間幾秒後可再放置
   rowBombs: [],         // 每列一顆星光炸彈（最後防線），用掉變 false
 
+  perks: null,          // 無盡增益累計效果（resetGame 建立）
+  perkChoice: null,     // 非 null = 三選一進行中，遊戲凍結
+
   wave: {
     index: -1,          // 目前波次（0-based），-1 = 尚未開始
     pending: [],        // 本波的 { type, at } 清單（at = 絕對遊戲時間，進場後為 null）
@@ -65,6 +68,17 @@ function resetGame(mode = 'campaign') {
     clearedAt: null,
     finished: false,
   };
+
+  G.perks = {
+    fireRateMult: 1,   // 射擊間隔倍率（<1 = 更快）
+    damageMult: 1,     // 傷害倍率
+    orbBonus: 0,       // 光珠加值
+    cooldownMult: 1,   // 卡牌冷卻倍率
+    unitHpMult: 1,     // 單位血量倍率
+    slowBonus: 0,      // 減速延長秒數
+    taken: [],         // 已取得的增益 id
+  };
+  G.perkChoice = null;
 
   G.skyOrbTimer = 0;
   G.paused = false;

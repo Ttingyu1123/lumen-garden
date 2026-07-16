@@ -314,3 +314,34 @@ canvas {
   .screen-box h2 { font-size: 26px; }
   .howto { line-height: 1.7; font-size: 14px; }
 }
+
+/* ---------- 無盡增益三選一 ---------- */
+#perk-options {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.perk-card {
+  width: 128px;
+  padding: 16px 10px 14px;
+  border: 2px solid #35476e;
+  border-radius: 12px;
+  background: #141d36;
+  color: #dfe8ff;
+  cursor: pointer;
+  transition: transform .08s, border-color .08s, box-shadow .08s;
+}
+
+.perk-card:hover {
+  transform: translateY(-3px);
+  border-color: #ffd97a;
+  box-shadow: 0 4px 18px rgba(255, 217, 122, .35);
+}
+
+.perk-emoji { font-size: 34px; margin-bottom: 6px; }
+.perk-name { font-weight: 700; color: #ffd97a; margin-bottom: 6px; }
+.perk-desc { font-size: 12px; line-height: 1.5; color: #cdd9f5; }
+
+#screen-perk .screen-box { max-width: 560px; }

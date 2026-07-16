@@ -39,6 +39,12 @@ const CONFIG = {
     PRODUCE_FACTOR: 0.7, // 生產者每級生產間隔倍率（越小越快）
   },
 
+  // --- 無盡模式增益（Roguelike 三選一）---
+  PERKS: {
+    EVERY: 5,          // 每清完 N 波跳一次選擇（與 Boss 波同步）
+    CHOICES: 3,        // 每次抽幾個選項
+  },
+
   // --- Boss 特殊技 ---
   BOSS_ABILITY: {
     SUMMON_INTERVAL: 15, // 每 N 秒召喚一次爪牙
