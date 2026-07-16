@@ -58,6 +58,8 @@ const CONFIG = {
     SPRINT_P: 0.3,       // 疾走者固定占比
     FLYER_P: 0.15,       // 飛翼固定占比（第 13 波起加入）
     FLYER_FROM: 2,       // 超出手寫表第幾波起出現飛翼（1-based over）
+    SPLIT_P: 0.12,       // 裂變體固定占比
+    SPLIT_FROM: 3,       // 超出手寫表第幾波起出現裂變體
     GAP_BASE: 2.2,       // 進場間隔（秒），逐波縮短
     GAP_DECAY: 0.1,
     GAP_MIN: 0.8,
@@ -137,6 +139,32 @@ const UNIT_TYPES = {
     hp: 500,              // 高血量，純擋路
     desc: '500 血肉盾，站著就是貢獻',
   },
+  lance: {
+    id: 'lance',
+    emoji: '🎋',
+    name: '貫月竹',
+    type: 'shooter',
+    cost: 200,
+    cooldown: 12,
+    hp: 100,
+    fireInterval: 1.8,
+    // pierce: 貫穿整列，路徑上每隻敵人都吃一次傷害
+    projectile: { damage: 22, speed: 360, pierce: true, color: '#d8f5a2' },
+    sfx: 'shoot',
+    desc: '竹槍貫穿整列，路徑上所有敵人各吃 22 傷害 — 排隊大軍剋星',
+  },
+  mine: {
+    id: 'mine',
+    emoji: '💥',
+    name: '星火地雷',
+    type: 'mine',
+    cost: 25,
+    cooldown: 18,
+    hp: 60,
+    // 佈署 armTime 秒後進入警戒；同列地面敵人踩進 radius 就引爆
+    mine: { armTime: 1.5, damage: 250, radius: 85 },
+    desc: '便宜的一次性炸彈：佈署 1.5 秒後，敵人踩到就爆（250 範圍傷害，對飛行無效）',
+  },
 };
 
 /* ------------------------------------------------------------
@@ -192,6 +220,32 @@ const ENEMY_TYPES = {
     attackInterval: 1.0,
     size: 52,
     desc: '披甲重裝，護甲打破前不掉血',
+  },
+  splitter: {
+    id: 'splitter',
+    emoji: '🫠',
+    name: '暗影裂變體',
+    hp: 160,
+    armor: 0,
+    speed: 15,
+    damage: 15,
+    attackInterval: 1.0,
+    size: 52,
+    splitInto: 'blobling',  // 死亡時分裂成 2 隻小體
+    splitCount: 2,
+    desc: '死亡時分裂成兩隻小裂體 — 單體高傷打它虧，濺射與貫穿是解',
+  },
+  blobling: {
+    id: 'blobling',
+    emoji: '👾',
+    name: '小裂體',
+    hp: 60,
+    armor: 0,
+    speed: 28,
+    damage: 10,
+    attackInterval: 1.0,
+    size: 36,
+    desc: '裂變體死後的小體：血少但快，成群很煩',
   },
   boss: {
     id: 'boss',
@@ -251,10 +305,10 @@ const WAVES = [
       [15, 'shambler'], [16, 'flyer'], [17, 'sprinter'], [19, 'shambler'],
     ]),
   },
-  { // 第 7 波
+  { // 第 7 波：裂變體登場
     spawns: spawnList([
-      [0, 'brute'], [2, 'shambler'], [4, 'shambler'], [6, 'sprinter'],
-      [8, 'shambler'], [10, 'brute'], [12, 'sprinter'], [14, 'shambler'],
+      [0, 'brute'], [2, 'shambler'], [4, 'splitter'], [6, 'sprinter'],
+      [8, 'shambler'], [10, 'brute'], [12, 'sprinter'], [14, 'splitter'],
       [16, 'shambler'], [18, 'sprinter'], [20, 'shambler'],
     ]),
   },
@@ -270,9 +324,9 @@ const WAVES = [
     spawns: spawnList([
       [0, 'brute'], [1.5, 'shambler'], [3, 'sprinter'], [4.5, 'shambler'],
       [5.5, 'flyer'], [6, 'brute'], [7.5, 'sprinter'], [9, 'shambler'],
-      [10.5, 'shambler'], [12, 'brute'], [13, 'flyer'], [13.5, 'sprinter'],
+      [10.5, 'splitter'], [12, 'brute'], [13, 'flyer'], [13.5, 'sprinter'],
       [15, 'shambler'], [16.5, 'brute'], [18, 'sprinter'], [19, 'flyer'],
-      [19.5, 'shambler'], [21, 'shambler'],
+      [19.5, 'splitter'], [21, 'shambler'],
     ]),
   },
   { // 第 10 波：最終大浪 + 暗影君王壓軸
@@ -280,9 +334,9 @@ const WAVES = [
       [0, 'brute'], [1, 'shambler'], [2, 'sprinter'], [3.5, 'shambler'],
       [4.5, 'flyer'], [5, 'brute'], [6, 'sprinter'], [7.5, 'shambler'],
       [9, 'brute'], [10, 'shambler'], [11, 'sprinter'], [12, 'boss'],
-      [12.5, 'shambler'], [14, 'brute'], [15, 'flyer'], [15.5, 'sprinter'],
+      [12.5, 'splitter'], [14, 'brute'], [15, 'flyer'], [15.5, 'sprinter'],
       [16.5, 'shambler'], [18, 'brute'], [19, 'sprinter'], [20, 'flyer'],
-      [20.5, 'shambler'], [22, 'shambler'],
+      [20.5, 'splitter'], [22, 'shambler'],
     ]),
   },
 ];

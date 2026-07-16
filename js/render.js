@@ -121,6 +121,18 @@ const Renderer = {
       const c = Grid.cellCenter(u.row, u.col);
       // 放置彈出動畫：0.25 秒內從 55% 長到 100%
       const pop = Math.min(1, u.age / 0.25);
+
+      // 地雷：佈署中半透明縮小，警戒後脈動
+      if (u.def.type === 'mine') {
+        const armed = u.timer >= u.def.mine.armTime;
+        const pulse = armed ? 1 + Math.sin(G.time * 6) * 0.12 : 0.75;
+        if (!armed) ctx.globalAlpha = 0.55;
+        this.emoji(u.def.emoji, c.x, c.y + 8, Math.round(34 * pulse));
+        ctx.globalAlpha = 1;
+        this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
+        continue;
+      }
+
       const size = Math.round(46 * (0.55 + 0.45 * pop));
       this.emoji(u.def.emoji, c.x, c.y + 2, size);
       // 等級星星：Lv2 一顆、Lv3 兩顆
@@ -191,6 +203,17 @@ const Renderer = {
     for (const p of G.projectiles) {
       // 微幅上下飄，讓飛行有生命感
       const wobble = Math.sin(p.age * 25) * 2;
+
+      // 貫穿彈：畫成竹槍長條
+      if (p.pierce) {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x - 16, p.y + wobble - 2.5, 26, 5);
+        ctx.globalAlpha = .35;
+        ctx.fillRect(p.x - 30, p.y + wobble - 1.5, 12, 3);
+        ctx.globalAlpha = 1;
+        continue;
+      }
+
       ctx.fillStyle = p.color;
       ctx.beginPath();
       ctx.arc(p.x, p.y + wobble, 6, 0, Math.PI * 2);

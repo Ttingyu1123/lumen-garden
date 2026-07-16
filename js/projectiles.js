@@ -16,6 +16,8 @@ const Projectiles = {
       slow: spec.slow || 0,
       splash: spec.splash || 0,           // 濺射半徑（px），0 = 無
       splashDamage: spec.splashDamage || 0,
+      pierce: spec.pierce || false,       // 貫穿：不因命中消失，每隻敵人只結算一次
+      hitList: spec.pierce ? [] : null,   // 貫穿已命中過的敵人
       color: spec.color || '#b6ff7a',
       age: 0,               // 供渲染做飄浮動畫
     });
@@ -30,6 +32,20 @@ const Projectiles = {
       // 飛出畫面就移除
       if (p.x > CONFIG.CANVAS_W + 40) {
         G.projectiles.splice(i, 1);
+        continue;
+      }
+
+      // 貫穿彈：對進入身體範圍且未命中過的每隻敵人各結算一次，彈體繼續飛
+      if (p.pierce) {
+        const victims = G.enemies.filter(e =>
+          e.row === p.row &&
+          p.x >= e.x - e.def.size / 2 && p.x <= e.x + e.def.size / 2 &&
+          !p.hitList.includes(e)
+        );
+        for (const e of victims) {   // 先收集再結算：damage 可能 splice G.enemies
+          p.hitList.push(e);
+          Enemies.damage(e, p.damage, { slow: p.slow });
+        }
         continue;
       }
 

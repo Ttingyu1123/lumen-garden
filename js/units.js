@@ -122,9 +122,36 @@ const Units = {
         } else {
           u.timer = Math.min(u.timer, u.def.fireInterval); // 沒目標時保持蓄力上限
         }
+      } else if (u.def.type === 'mine') {
+        // 佈署倒數 → 警戒；地面敵人踩進觸發範圍就引爆（一次性）
+        u.timer += dt;
+        if (u.timer >= u.def.mine.armTime) {
+          const c = Grid.cellCenter(u.row, u.col);
+          // 觸發距離隨敵人體型：確保停下啃咬前一定先踩到（reach = 26 + size/2）
+          const tripped = G.enemies.some(e =>
+            !e.def.flying && e.row === u.row &&
+            Math.abs(e.x - c.x) <= e.def.size / 2 + 30
+          );
+          if (tripped) this.explodeMine(u);
+        }
       }
       // 'wall' 型不做事，站著就是貢獻
     }
+  },
+
+  /** 引爆地雷：同列半徑內地面敵人全吃傷害，地雷消失（無退款） */
+  explodeMine(u) {
+    const c = Grid.cellCenter(u.row, u.col);
+    const dmg = Math.round(u.def.mine.damage * this.damageMult(u));
+    const victims = G.enemies.filter(e =>
+      !e.def.flying && e.row === u.row && Math.abs(e.x - c.x) <= u.def.mine.radius
+    );
+    G.bursts.push({ x: c.x, y: c.y, r: u.def.mine.radius, color: '#ffb35a', age: 0 });
+    G.grid[u.row][u.col] = null;
+    const i = G.units.indexOf(u);
+    if (i !== -1) G.units.splice(i, 1);
+    Sfx.play('bomb');
+    for (const e of victims) Enemies.damage(e, dmg);
   },
 
   /** 鏟除單位：退回 50% 成本。回傳 { ok } 或 { ok:false, reason } */

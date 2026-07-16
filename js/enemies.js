@@ -7,8 +7,11 @@
 
 const Enemies = {
 
-  /** 在指定列生成一隻敵人（row 省略則隨機）；血量隨波次成長 */
-  spawn(typeId, row) {
+  /**
+   * 在指定列生成一隻敵人（row 省略則隨機）；血量隨波次成長。
+   * opts.x：出生位置（分裂體用），省略 = 畫布右緣進場。
+   */
+  spawn(typeId, row, opts = {}) {
     const def = ENEMY_TYPES[typeId];
     if (row === undefined) row = Math.floor(Math.random() * CONFIG.ROWS);
 
@@ -21,7 +24,7 @@ const Enemies = {
       typeId,
       def,
       row,
-      x: Grid.spawnX(),        // 敵人中心 x
+      x: opts.x !== undefined ? opts.x : Grid.spawnX(),   // 敵人中心 x
       hp,
       maxHp: hp,
       armor,
@@ -145,6 +148,13 @@ const Enemies = {
       // 死亡爆裂：尺寸跟身型走，Boss 有大場面
       G.bursts.push({ x: enemy.x, y, r: enemy.def.size * 0.8, color: '#b18cff', age: 0 });
       Sfx.play('death');
+
+      // 裂變體：死亡時在原地分裂成小體（前後錯開避免完全重疊）
+      if (enemy.def.splitInto) {
+        for (let k = 0; k < enemy.def.splitCount; k++) {
+          this.spawn(enemy.def.splitInto, enemy.row, { x: enemy.x + (k === 0 ? -16 : 16) });
+        }
+      }
     }
   },
 };

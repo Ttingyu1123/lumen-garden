@@ -22,12 +22,14 @@ const Waves = {
 
     const spawns = [];
     const flyerP = over >= E.FLYER_FROM ? E.FLYER_P : 0;
+    const splitP = over >= E.SPLIT_FROM ? E.SPLIT_P : 0;
     let t = 0;
     for (let i = 0; i < count; i++) {
       const r = Math.random();
       const type = r < bruteP ? 'brute'
         : r < bruteP + E.SPRINT_P ? 'sprinter'
         : r < bruteP + E.SPRINT_P + flyerP ? 'flyer'
+        : r < bruteP + E.SPRINT_P + flyerP + splitP ? 'splitter'
         : 'shambler';
       spawns.push({ type, delay: t });
       t += gap;
