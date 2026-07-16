@@ -38,6 +38,8 @@ const Units = {
       col,
       hp: def.hp,
       maxHp: def.hp,
+      level: 1,           // 升級等級（點擊場上單位升級，最高 UPGRADE.MAX_LEVEL）
+      invested: def.cost, // 累計投資（含升級費），鏟除退款以此計算
       timer: 0,   // 生產 / 射擊共用計時器
       age: 0,     // 放置後經過秒數（供彈出動畫）
     };
@@ -48,6 +50,43 @@ const Units = {
     return { ok: true };
   },
 
+  /** 升到 L+1 的費用；已滿級回傳 null */
+  upgradeCost(unit) {
+    if (unit.level >= CONFIG.UPGRADE.MAX_LEVEL) return null;
+    return Math.round(unit.def.cost * unit.level * CONFIG.UPGRADE.COST_FACTOR);
+  },
+
+  /**
+   * 嘗試升級 (row, col) 的單位：血量上限 ×HP_MULT 並回滿，
+   * 射手傷害 ×DAMAGE_MULT、生產間隔 ×PRODUCE_FACTOR（見等級加成 getters）。
+   */
+  tryUpgrade(row, col) {
+    const unit = G.grid[row][col];
+    if (!unit) return { ok: false, reason: '這格沒有單位' };
+    const cost = this.upgradeCost(unit);
+    if (cost === null) return { ok: false, reason: `${unit.def.name} 已是最高等級` };
+    if (!Resources.spend(cost)) {
+      return { ok: false, reason: `升級需要 ${cost} 光能` };
+    }
+    unit.level += 1;
+    unit.invested += cost;
+    unit.maxHp = Math.round(unit.def.hp * Math.pow(CONFIG.UPGRADE.HP_MULT, unit.level - 1));
+    unit.hp = unit.maxHp;   // 升級回滿血
+    unit.age = 0;           // 重播彈出動畫當升級回饋
+    const c = Grid.cellCenter(row, col);
+    G.floaters.push({ x: c.x, y: c.y - 20, text: `⬆ Lv${unit.level}`, age: 0 });
+    Sfx.play('place');
+    return { ok: true, level: unit.level };
+  },
+
+  /** 射手的等級傷害倍率 / 生產者的等級間隔倍率 */
+  damageMult(unit) {
+    return Math.pow(CONFIG.UPGRADE.DAMAGE_MULT, unit.level - 1);
+  },
+  produceInterval(unit) {
+    return unit.def.produceInterval * Math.pow(CONFIG.UPGRADE.PRODUCE_FACTOR, unit.level - 1);
+  },
+
   update(dt) {
     for (const u of G.units) {
       u.age += dt;
@@ -55,7 +94,7 @@ const Units = {
       if (u.def.type === 'producer') {
         // 定期生產光珠
         u.timer += dt;
-        if (u.timer >= u.def.produceInterval) {
+        if (u.timer >= this.produceInterval(u)) {
           u.timer = 0;
           const c = Grid.cellCenter(u.row, u.col);
           Resources.spawnOrbAt(c.x, c.y);
@@ -70,7 +109,14 @@ const Units = {
           u.timer += dt;
           if (u.timer >= u.def.fireInterval) {
             u.timer = 0;
-            Projectiles.spawn(u.row, c.x + 20, c.y - 10, u.def.projectile);
+            // 等級加成套在投射物規格上（不動 def 原本資料）
+            const mult = this.damageMult(u);
+            const spec = mult === 1 ? u.def.projectile : {
+              ...u.def.projectile,
+              damage: Math.round(u.def.projectile.damage * mult),
+              splashDamage: Math.round((u.def.projectile.splashDamage || 0) * mult),
+            };
+            Projectiles.spawn(u.row, c.x + 20, c.y - 10, spec);
             Sfx.play(u.def.sfx || 'shoot');
           }
         } else {
@@ -85,7 +131,7 @@ const Units = {
   remove(row, col) {
     const unit = G.grid[row][col];
     if (!unit) return { ok: false, reason: '這格沒有單位可以鏟' };
-    const refund = Math.floor(unit.def.cost * CONFIG.SHOVEL_REFUND);
+    const refund = Math.floor(unit.invested * CONFIG.SHOVEL_REFUND);
     G.lux += refund;
     const c = Grid.cellCenter(row, col);
     G.floaters.push({ x: c.x, y: c.y, text: `+${refund}`, age: 0 });

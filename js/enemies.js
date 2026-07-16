@@ -30,6 +30,7 @@ const Enemies = {
       target: null,            // 正在啃的單位
       slowT: 0,                // 減速剩餘秒數
       flashT: 0,               // 受傷閃爍剩餘秒數
+      abilityTimer: 0,         // Boss 召喚計時器
     });
 
     if (typeId === 'boss') {
@@ -46,17 +47,37 @@ const Enemies = {
       if (e.slowT > 0) e.slowT -= dt;
       if (e.flashT > 0) e.flashT -= dt;
 
+      // Boss 特殊技：定期召喚爪牙（場上太多敵人就先不召，防爆量）
+      if (e.typeId === 'boss') {
+        e.abilityTimer += dt;
+        const A = CONFIG.BOSS_ABILITY;
+        if (e.abilityTimer >= A.SUMMON_INTERVAL) {
+          e.abilityTimer = 0;
+          if (G.enemies.length < A.SUMMON_CAP) {
+            for (let i = 0; i < A.SUMMON_COUNT; i++) {
+              this.spawn(Math.random() < 0.5 ? 'shambler' : 'sprinter');
+            }
+            G.bursts.push({ x: e.x, y: Grid.rowCenterY(e.row), r: 60, color: '#b18cff', age: 0 });
+            UI.showBanner('😈 暗影君王召喚爪牙！');
+            Sfx.play('wave');
+          }
+        }
+      }
+
       // 1) 找攻擊目標：同列、在敵人前方（左側）、距離夠近的最近單位
       //    貼近門檻 = 單位半寬 26 + 敵人身體半寬（Boss 更大所以更早接敵）
+      //    飛行型不找目標：飛越一切地面單位直撲防線
       const reach = 26 + e.def.size / 2;
       let target = null;
-      for (const u of G.units) {
-        if (u.row !== e.row) continue;
-        const ux = Grid.cellCenter(u.row, u.col).x;
-        if (ux > e.x) continue;                 // 只啃前進方向的單位
-        if (e.x - ux > reach) continue;         // 還沒貼到
-        if (!target || ux > Grid.cellCenter(target.row, target.col).x) {
-          target = u;                           // 取最靠近自己的那個
+      if (!e.def.flying) {
+        for (const u of G.units) {
+          if (u.row !== e.row) continue;
+          const ux = Grid.cellCenter(u.row, u.col).x;
+          if (ux > e.x) continue;                 // 只啃前進方向的單位
+          if (e.x - ux > reach) continue;         // 還沒貼到
+          if (!target || ux > Grid.cellCenter(target.row, target.col).x) {
+            target = u;                           // 取最靠近自己的那個
+          }
         }
       }
       e.target = target;
@@ -66,7 +87,10 @@ const Enemies = {
         e.attackTimer += dt;
         if (e.attackTimer >= e.def.attackInterval) {
           e.attackTimer = 0;
-          Units.damage(target, e.def.damage);
+          // Boss 巨口碎石：對 wall 型單位傷害翻倍
+          const crush = e.typeId === 'boss' && target.def.type === 'wall'
+            ? CONFIG.BOSS_ABILITY.CRUSH_MULT : 1;
+          Units.damage(target, e.def.damage * crush);
         }
       } else {
         // 2b) 行走模式（減速中打對折）

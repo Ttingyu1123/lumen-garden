@@ -66,10 +66,26 @@ const Renderer = {
   },
 
   drawHover(hoverCell) {
-    if (!hoverCell || !G.selectedType || G.phase !== 'playing') return;
+    if (!hoverCell || G.phase !== 'playing') return;
     const ctx = this.ctx;
     const o = Grid.cellOrigin(hoverCell.row, hoverCell.col);
     const occupied = Grid.isOccupied(hoverCell.row, hoverCell.col);
+
+    // 沒選卡牌：hover 到單位顯示升級提示
+    if (!G.selectedType) {
+      if (!occupied) return;
+      const unit = G.grid[hoverCell.row][hoverCell.col];
+      const cost = Units.upgradeCost(unit);
+      ctx.fillStyle = 'rgba(255, 217, 122, .22)';
+      ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillStyle = '#ffd97a';
+      ctx.fillText(
+        cost === null ? 'Lv MAX' : `⬆ 升級 ✨${cost}`,
+        o.x + CONFIG.CELL_W / 2, o.y + 12
+      );
+      return;
+    }
 
     // 鏟子模式：有單位的格亮橘（可鏟），空格微亮
     if (G.selectedType === 'shovel') {
@@ -107,6 +123,10 @@ const Renderer = {
       const pop = Math.min(1, u.age / 0.25);
       const size = Math.round(46 * (0.55 + 0.45 * pop));
       this.emoji(u.def.emoji, c.x, c.y + 2, size);
+      // 等級星星：Lv2 一顆、Lv3 兩顆
+      for (let i = 0; i < u.level - 1; i++) {
+        this.emoji('⭐', c.x - 30 + i * 15, c.y - 30, 13);
+      }
       this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
     }
   },
@@ -114,12 +134,22 @@ const Renderer = {
   drawEnemies() {
     const ctx = this.ctx;
     for (const e of G.enemies) {
-      const y = Grid.rowCenterY(e.row);
+      const rowY = Grid.rowCenterY(e.row);
+      // 飛行型：上下浮動 + 地面影子
+      const fly = e.def.flying ? -16 + Math.sin(G.time * 4 + e.x * 0.05) * 4 : 0;
+      const y = rowY + fly;
       const s = e.def.size;              // 身體尺寸（Boss 88，其餘 52）
       const draw = s * 1.15;             // 視覺略大於碰撞框
       const half = s / 2;
       // 攻擊中的敵人微微前傾抖動
       const shake = e.target ? Math.sin(G.time * 20) * 2 : 0;
+
+      if (e.def.flying) {
+        ctx.fillStyle = 'rgba(0, 0, 0, .3)';
+        ctx.beginPath();
+        ctx.ellipse(e.x, rowY + half * 0.85, half * 0.6, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       // 減速中：腳下結冰光圈
       if (e.slowT > 0) {

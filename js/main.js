@@ -77,8 +77,24 @@
       } else {
         UI.toast(result.reason);
       }
+      return;
     }
+
+    // 沒選卡牌時點場上單位 → 升級
+    tryUpgradeAt(p);
   });
+
+  /** 沒選卡牌時點到已放置單位 → 嘗試升級 */
+  function tryUpgradeAt(p) {
+    const cell = Grid.cellAt(p.x, p.y);
+    if (!cell || !Grid.isOccupied(cell.row, cell.col)) return;
+    const result = Units.tryUpgrade(cell.row, cell.col);
+    if (result.ok) {
+      UI.toast(`⬆ 升級成功！Lv${result.level}`);
+    } else {
+      UI.toast(result.reason);
+    }
+  }
 
   canvas.addEventListener('click', (evt) => {
     if (G.phase !== 'playing' || G.paused) return;
@@ -112,7 +128,11 @@
       } else {
         UI.toast(result.reason);
       }
+      return;
     }
+
+    // 4) 沒選卡牌時點場上單位 → 升級
+    tryUpgradeAt(p);
   });
 
   // P 鍵暫停 / 繼續

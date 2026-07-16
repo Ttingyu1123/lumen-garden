@@ -28,7 +28,24 @@ const CONFIG = {
   SLOW_FACTOR: 0.5,      // 減速時的移動速度倍率
 
   // --- 鏟子 ---
-  SHOVEL_REFUND: 0.5,    // 鏟除單位退回成本比例
+  SHOVEL_REFUND: 0.5,    // 鏟除單位退回「總投資」（含升級費）比例
+
+  // --- 單位升級（點擊場上單位花光能升級，最高 3 級）---
+  UPGRADE: {
+    MAX_LEVEL: 3,
+    COST_FACTOR: 1,      // 升到 L+1 的費用 = 基礎成本 × 目前等級 × 此係數
+    HP_MULT: 1.5,        // 每級最大血量倍率（升級同時回滿血）
+    DAMAGE_MULT: 1.5,    // 射手每級傷害倍率（含濺射）
+    PRODUCE_FACTOR: 0.7, // 生產者每級生產間隔倍率（越小越快）
+  },
+
+  // --- Boss 特殊技 ---
+  BOSS_ABILITY: {
+    SUMMON_INTERVAL: 15, // 每 N 秒召喚一次爪牙
+    SUMMON_COUNT: 2,     // 每次召喚隻數
+    SUMMON_CAP: 40,      // 場上敵人達此數就不再召喚（防爆量）
+    CRUSH_MULT: 4,       // 對 wall 型單位的傷害倍率（巨口碎石）
+  },
 
   // --- 無盡模式：第 11 波起用公式生波 ---
   ENDLESS: {
@@ -39,6 +56,8 @@ const CONFIG = {
     BRUTE_PER_WAVE: 0.03,
     BRUTE_MAX: 0.4,
     SPRINT_P: 0.3,       // 疾走者固定占比
+    FLYER_P: 0.15,       // 飛翼固定占比（第 13 波起加入）
+    FLYER_FROM: 2,       // 超出手寫表第幾波起出現飛翼（1-based over）
     GAP_BASE: 2.2,       // 進場間隔（秒），逐波縮短
     GAP_DECAY: 0.1,
     GAP_MIN: 0.8,
@@ -149,6 +168,19 @@ const ENEMY_TYPES = {
     size: 52,
     desc: '快速型，血少跑快 — 用寒霜蓮剋制',
   },
+  flyer: {
+    id: 'flyer',
+    emoji: '🦇',
+    name: '暗影飛翼',
+    hp: 100,
+    armor: 0,
+    speed: 26,
+    damage: 0,            // 不攻擊：飛越一切地面單位直撲防線
+    attackInterval: 1.0,
+    size: 48,
+    flying: true,         // 飛行：不會被單位擋下，只有射手攔得住
+    desc: '飛越所有地面單位直撲防線 — 肉盾擋不住，靠射手攔截',
+  },
   brute: {
     id: 'brute',
     emoji: '👹',
@@ -171,7 +203,7 @@ const ENEMY_TYPES = {
     damage: 60,           // 一口咬掉大半單位
     attackInterval: 1.2,
     size: 88,             // 巨型：碰撞與繪製都更大
-    desc: 'Boss：戰役最終波與無盡每 5 波現身，集全列火力速殺',
+    desc: 'Boss：定期召喚爪牙、巨口碎石（對肉盾 4 倍傷害），集全列火力速殺',
   },
 };
 
@@ -212,11 +244,11 @@ const WAVES = [
       [11, 'shambler'], [14, 'sprinter'], [17, 'shambler'],
     ]),
   },
-  { // 第 6 波
+  { // 第 6 波：飛翼登場（飛越地面單位，逼玩家補射手）
     spawns: spawnList([
       [0, 'shambler'], [2, 'brute'], [4, 'shambler'], [6, 'sprinter'],
-      [9, 'shambler'], [11, 'brute'], [13, 'sprinter'], [15, 'shambler'],
-      [17, 'sprinter'], [19, 'shambler'],
+      [8, 'flyer'], [9, 'shambler'], [11, 'brute'], [13, 'sprinter'],
+      [15, 'shambler'], [16, 'flyer'], [17, 'sprinter'], [19, 'shambler'],
     ]),
   },
   { // 第 7 波
@@ -228,27 +260,29 @@ const WAVES = [
   },
   { // 第 8 波
     spawns: spawnList([
-      [0, 'shambler'], [1.5, 'brute'], [3, 'shambler'], [5, 'sprinter'],
-      [6.5, 'shambler'], [8, 'brute'], [10, 'sprinter'], [12, 'shambler'],
-      [13.5, 'brute'], [15, 'sprinter'], [17, 'shambler'], [19, 'shambler'],
-      [20, 'sprinter'],
+      [0, 'shambler'], [1.5, 'brute'], [3, 'shambler'], [4, 'flyer'],
+      [5, 'sprinter'], [6.5, 'shambler'], [8, 'brute'], [10, 'sprinter'],
+      [11, 'flyer'], [12, 'shambler'], [13.5, 'brute'], [15, 'sprinter'],
+      [17, 'shambler'], [18, 'flyer'], [19, 'shambler'], [20, 'sprinter'],
     ]),
   },
   { // 第 9 波
     spawns: spawnList([
       [0, 'brute'], [1.5, 'shambler'], [3, 'sprinter'], [4.5, 'shambler'],
-      [6, 'brute'], [7.5, 'sprinter'], [9, 'shambler'], [10.5, 'shambler'],
-      [12, 'brute'], [13.5, 'sprinter'], [15, 'shambler'], [16.5, 'brute'],
-      [18, 'sprinter'], [19.5, 'shambler'], [21, 'shambler'],
+      [5.5, 'flyer'], [6, 'brute'], [7.5, 'sprinter'], [9, 'shambler'],
+      [10.5, 'shambler'], [12, 'brute'], [13, 'flyer'], [13.5, 'sprinter'],
+      [15, 'shambler'], [16.5, 'brute'], [18, 'sprinter'], [19, 'flyer'],
+      [19.5, 'shambler'], [21, 'shambler'],
     ]),
   },
   { // 第 10 波：最終大浪 + 暗影君王壓軸
     spawns: spawnList([
       [0, 'brute'], [1, 'shambler'], [2, 'sprinter'], [3.5, 'shambler'],
-      [5, 'brute'], [6, 'sprinter'], [7.5, 'shambler'], [9, 'brute'],
-      [10, 'shambler'], [11, 'sprinter'], [12, 'boss'], [12.5, 'shambler'],
-      [14, 'brute'], [15, 'sprinter'], [16.5, 'shambler'], [18, 'brute'],
-      [19, 'sprinter'], [20.5, 'shambler'], [22, 'shambler'],
+      [4.5, 'flyer'], [5, 'brute'], [6, 'sprinter'], [7.5, 'shambler'],
+      [9, 'brute'], [10, 'shambler'], [11, 'sprinter'], [12, 'boss'],
+      [12.5, 'shambler'], [14, 'brute'], [15, 'flyer'], [15.5, 'sprinter'],
+      [16.5, 'shambler'], [18, 'brute'], [19, 'sprinter'], [20, 'flyer'],
+      [20.5, 'shambler'], [22, 'shambler'],
     ]),
   },
 ];
