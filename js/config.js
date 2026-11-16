@@ -78,7 +78,7 @@ CONFIG.CANVAS_W = CONFIG.GRID_X * 2 + CONFIG.COLS * CONFIG.CELL_W; // 912
 CONFIG.CANVAS_H = CONFIG.GRID_Y * 2 + CONFIG.ROWS * CONFIG.CELL_H; // 528
 
 /* ------------------------------------------------------------
-   防禦單位資料表（全部原創命名 + emoji 美術）
+   防禦單位資料表（全部原創命名；角色圖在 img/sprites/，emoji 欄位是缺圖時的退路）
    type 欄位決定行為：producer / shooter / wall
    shooter 的投射物規格集中在 projectile 欄位
    ------------------------------------------------------------ */

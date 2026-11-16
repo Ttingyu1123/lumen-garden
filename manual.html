@@ -64,7 +64,9 @@
   .warn { border-left: 4px solid var(--red); background: var(--panel);
     border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 12px 0; }
   .warn::before { content: "⚠️ "; }
-  .emoji-lg { font-size: 26px; vertical-align: -3px; margin-right: 4px; }
+  .sprite-lg { display: block; height: 44px; width: auto; margin-bottom: 2px; }
+  td:has(> .sprite-lg) { white-space: nowrap; }
+  .sprite-sm { height: 24px; width: auto; vertical-align: -6px; }
   footer { text-align: center; color: var(--dim); font-size: 13px; margin-top: 48px;
     border-top: 1px solid var(--line); padding-top: 20px; }
   footer a { color: var(--gold); }
@@ -105,7 +107,7 @@
   <ul>
     <li><strong>🏆 戰役模式</strong>：5 個規則各異的關卡，各擋下 10 波（含最終 Boss）即勝利，依剩餘炸彈評 1~3 星</li>
     <li><strong>♾️ 無盡模式</strong>：第 11 波起無限生波、越來越難，每 5 波可挑一個增益，拚「撐到第幾波」的最高紀錄</li>
-    <li>每列有一顆 🌟 <strong>星光炸彈</strong>當最後防線——被突破時自動引爆清光該列，但<strong>每列僅此一次</strong></li>
+    <li>每列有一顆 <img class="sprite-sm" src="img/sprites/star.png" alt=""> <strong>星光炸彈</strong>當最後防線——被突破時自動引爆清光該列，但<strong>每列僅此一次</strong></li>
   </ul>
 </section>
 
@@ -113,12 +115,12 @@
   <h2 class="sec">快速上手：開局 SOP</h2>
   <p>開場有 <strong>15 秒準備時間</strong>（畫面上方倒數），這段時間決定整場經濟。照這個順序做：</p>
   <ol class="steps big">
-    <li><strong>先種 🍄 聚光菇</strong>——開局 150 光能先種 2 朵（第 1 欄），剩 50 留著。經濟永遠優先於火力。</li>
+    <li><strong>先種 <img class="sprite-sm" src="img/sprites/unit-bloom.png" alt=""> 聚光菇</strong>——開局 150 光能先種 2 朵（第 1 欄），剩 50 留著。經濟永遠優先於火力。</li>
     <li><strong>點擊每一顆 ✨ 光珠</strong>——天上每 9 秒掉一顆、聚光菇每 8 秒生產一顆，each +25。光珠落地 12 秒後消失（最後 3 秒會閃爍），手不要停。</li>
-    <li><strong>第一波前湊出 1~2 支 🌵 棘刺射手</strong>（各 100）放第 3 欄。第一波只有 3 隻慢行者，1 支射手配合走路時間就足夠。</li>
+    <li><strong>第一波前湊出 1~2 支 <img class="sprite-sm" src="img/sprites/unit-thorn.png" alt=""> 棘刺射手</strong>（各 100）放第 3 欄。第一波只有 3 隻慢行者，1 支射手配合走路時間就足夠。</li>
     <li><strong>持續補聚光菇到 4~5 朵</strong>，之後再全力鋪火力。前 3 波的壓力都很輕，是純粹的發育期。</li>
   </ol>
-  <div class="tip">放置後想反悔？用 🥄 鏟子移除可退回 50% 光能，早期把放歪的單位挪位置成本不高。</div>
+  <div class="tip">放置後想反悔？用 <img class="sprite-sm" src="img/sprites/shovel.png" alt=""> 鏟子移除可退回 50% 光能，早期把放歪的單位挪位置成本不高。</div>
 </section>
 
 <section id="economy">
@@ -126,8 +128,8 @@
   <table>
     <tr><th>來源</th><th>頻率</th><th>產量</th><th>備註</th></tr>
     <tr><td>☁️ 天降光珠</td><td>每 9 秒</td><td>+25</td><td>隨機位置，免費但要點</td></tr>
-    <tr><td>🍄 聚光菇</td><td>每 8 秒 / 朵</td><td>+25</td><td>光珠拋在該格右下角</td></tr>
-    <tr><td>🥄 鏟子回收</td><td>—</td><td>單位成本的 50%</td><td>殘血單位死前鏟掉能回本一半</td></tr>
+    <tr><td><img class="sprite-sm" src="img/sprites/unit-bloom.png" alt=""> 聚光菇</td><td>每 8 秒 / 朵</td><td>+25</td><td>光珠拋在該格右下角</td></tr>
+    <tr><td><img class="sprite-sm" src="img/sprites/shovel.png" alt=""> 鏟子回收</td><td>—</td><td>單位成本的 50%</td><td>殘血單位死前鏟掉能回本一半</td></tr>
   </table>
   <p>換算：<strong>每多一朵聚光菇 ≈ 每分鐘 +187 光能</strong>。4 朵聚光菇加上天降，每分鐘進帳約 900——足以支撐中期每波補 1~2 個單位。</p>
   <div class="warn">光珠落地 <strong>12 秒</strong>後消失，快過期會閃爍。打到手忙腳亂時優先撿珠再操作卡牌——漏珠是最常見的隱形虧損。</div>
@@ -137,13 +139,13 @@
   <h2 class="sec">防禦單位圖鑑</h2>
   <table>
     <tr><th>單位</th><th>成本</th><th>冷卻</th><th>血量</th><th>功能</th><th>戰術定位</th></tr>
-    <tr><td><span class="emoji-lg">🍄</span>聚光菇</td><td>50</td><td>7s</td><td>80</td><td>每 8 秒生產一顆光珠（+25）</td><td>經濟核心。放最後排（第 1 欄），目標 4~5 朵</td></tr>
-    <tr><td><span class="emoji-lg">🌵</span>棘刺射手</td><td>100</td><td>7s</td><td>120</td><td>每 1.4 秒射一發棘刺（20 傷害）</td><td>主力輸出，DPS ≈ 14.3。每列至少 1~2 支，放第 2~3 欄</td></tr>
-    <tr><td><span class="emoji-lg">❄️</span>寒霜蓮</td><td>75</td><td>9s</td><td>100</td><td>每 2 秒射霜彈（10 傷害 + <strong>減速 50% 持續 3 秒</strong>）</td><td>控場。放射手前一欄，減速 = 讓射手多打一倍時間</td></tr>
-    <tr><td><span class="emoji-lg">🌺</span>爆炎花</td><td>150</td><td>10s</td><td>100</td><td>每 2.2 秒射火彈（主傷 26 + <strong>濺射</strong>命中點 70px 內同列敵人各 13）</td><td>清群。敵人排成串時價值最高，無盡後期必備</td></tr>
-    <tr><td><span class="emoji-lg">🪨</span>磐石守衛</td><td>50</td><td>15s</td><td><strong>500</strong></td><td>純肉盾，站著就是貢獻</td><td>放第 6~7 欄擋路。一顆能扛慢行者咬 25 口。<strong>注意：擋不住 🦇 飛翼，Boss 對它 4 倍傷害</strong></td></tr>
-    <tr><td><span class="emoji-lg">🎋</span>貫月竹</td><td>200</td><td>12s</td><td>100</td><td>每 1.8 秒射竹槍<strong>貫穿整列</strong>，路徑上每隻敵人各吃 22</td><td>排隊大軍剋星。敵人越密越賺，無盡後期一發打 5+ 隻</td></tr>
-    <tr><td><span class="emoji-lg">💥</span>星火地雷</td><td><strong>25</strong></td><td>18s</td><td>60</td><td>佈署 1.5 秒後警戒，敵人踩到即爆（<strong>250</strong> 範圍傷害）</td><td>便宜救急。防線破口丟一顆、Boss 進場路上預埋。<strong>對飛行無效</strong></td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-bloom.png" alt="">聚光菇</td><td>50</td><td>7s</td><td>80</td><td>每 8 秒生產一顆光珠（+25）</td><td>經濟核心。放最後排（第 1 欄），目標 4~5 朵</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-thorn.png" alt="">棘刺射手</td><td>100</td><td>7s</td><td>120</td><td>每 1.4 秒射一發棘刺（20 傷害）</td><td>主力輸出，DPS ≈ 14.3。每列至少 1~2 支，放第 2~3 欄</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-frost.png" alt="">寒霜蓮</td><td>75</td><td>9s</td><td>100</td><td>每 2 秒射霜彈（10 傷害 + <strong>減速 50% 持續 3 秒</strong>）</td><td>控場。放射手前一欄，減速 = 讓射手多打一倍時間</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-blaze.png" alt="">爆炎花</td><td>150</td><td>10s</td><td>100</td><td>每 2.2 秒射火彈（主傷 26 + <strong>濺射</strong>命中點 70px 內同列敵人各 13）</td><td>清群。敵人排成串時價值最高，無盡後期必備</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-boulder.png" alt="">磐石守衛</td><td>50</td><td>15s</td><td><strong>500</strong></td><td>純肉盾，站著就是貢獻</td><td>放第 6~7 欄擋路。一顆能扛慢行者咬 25 口。<strong>注意：擋不住 <img class="sprite-sm" src="img/sprites/enemy-flyer.png" alt=""> 飛翼，Boss 對它 4 倍傷害</strong></td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-lance.png" alt="">貫月竹</td><td>200</td><td>12s</td><td>100</td><td>每 1.8 秒射竹槍<strong>貫穿整列</strong>，路徑上每隻敵人各吃 22</td><td>排隊大軍剋星。敵人越密越賺，無盡後期一發打 5+ 隻</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/unit-mine.png" alt="">星火地雷</td><td><strong>25</strong></td><td>18s</td><td>60</td><td>佈署 1.5 秒後警戒，敵人踩到即爆（<strong>250</strong> 範圍傷害）</td><td>便宜救急。防線破口丟一顆、Boss 進場路上預埋。<strong>對飛行無效</strong></td></tr>
   </table>
   <div class="tip">射手只在<strong>同一列</strong>有敵人時才開火，且沒目標時不會浪費彈藥——不用擔心空轉，但也代表冷門列的射手是閒置資產，敵人壓力偏向哪列就往哪列補。</div>
 </section>
@@ -166,26 +168,26 @@
   <h2 class="sec">敵人圖鑑</h2>
   <table>
     <tr><th>敵人</th><th>血量</th><th>速度</th><th>攻擊</th><th>特性與剋制</th></tr>
-    <tr><td><span class="emoji-lg">🧟</span>暗影慢行者</td><td>200</td><td>慢</td><td>20 / 秒</td><td>大宗主力。任何射手都能處理，別為它花大錢</td></tr>
-    <tr><td><span class="emoji-lg">👺</span>暗影疾走者</td><td>130</td><td><span class="pill p-bad">快（2.6 倍）</span></td><td>20 / 秒</td><td>血少跑快，防線還沒反應就貼臉。<strong>❄️ 寒霜蓮是天敵</strong>——減速後等同慢行者</td></tr>
-    <tr><td><span class="emoji-lg">👹</span>暗影重甲兵</td><td>180 + <span class="pill p-warn">🛡️ 護甲 150</span></td><td>慢</td><td>25 / 秒</td><td>護甲先吸收全部傷害，<strong>打破前不掉血</strong>（頭上灰條是甲、綠條是血）。等效 330 血，優先集火</td></tr>
-    <tr><td><span class="emoji-lg">🦇</span>暗影飛翼</td><td>100</td><td><span class="pill p-bad">快（2 倍）</span></td><td>—</td><td><strong>飛越所有地面單位</strong>直撲防線——肉盾、地雷都攔不住，只有射手打得到。每列都要有射手，否則一隻飛翼就換掉一顆炸彈</td></tr>
-    <tr><td><span class="emoji-lg">🫠</span>暗影裂變體</td><td>160</td><td>中</td><td>15 / 秒</td><td><strong>死亡時分裂成 2 隻 👾 小裂體</strong>（60 血、速度快）。單體高傷打它虧，🌺 濺射與 🎋 貫穿是解</td></tr>
-    <tr><td><span class="emoji-lg">😈</span>暗影君王（Boss）</td><td><strong>1800</strong> + <span class="pill p-bad">🛡️ 護甲 400</span></td><td>很慢</td><td><strong>60</strong> / 1.2 秒</td><td>巨體（更早接敵、更容易被打中）。<strong>每 15 秒召喚 2 隻爪牙</strong>（有橫幅警示）；對磐石守衛<strong>4 倍碎石傷害</strong>（一口 240）——別想用肉盾耗，<strong>靠減速拖時間 + 全列火力速殺</strong></td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-shambler.png" alt="">暗影慢行者</td><td>200</td><td>慢</td><td>20 / 秒</td><td>大宗主力。任何射手都能處理，別為它花大錢</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-sprinter.png" alt="">暗影疾走者</td><td>130</td><td><span class="pill p-bad">快（2.6 倍）</span></td><td>20 / 秒</td><td>血少跑快，防線還沒反應就貼臉。<strong><img class="sprite-sm" src="img/sprites/unit-frost.png" alt=""> 寒霜蓮是天敵</strong>——減速後等同慢行者</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-brute.png" alt="">暗影重甲兵</td><td>180 + <span class="pill p-warn">🛡️ 護甲 150</span></td><td>慢</td><td>25 / 秒</td><td>護甲先吸收全部傷害，<strong>打破前不掉血</strong>（頭上灰條是甲、綠條是血）。等效 330 血，優先集火</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-flyer.png" alt="">暗影飛翼</td><td>100</td><td><span class="pill p-bad">快（2 倍）</span></td><td>—</td><td><strong>飛越所有地面單位</strong>直撲防線——肉盾、地雷都攔不住，只有射手打得到。每列都要有射手，否則一隻飛翼就換掉一顆炸彈</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-splitter.png" alt="">暗影裂變體</td><td>160</td><td>中</td><td>15 / 秒</td><td><strong>死亡時分裂成 2 隻 <img class="sprite-sm" src="img/sprites/enemy-blobling.png" alt=""> 小裂體</strong>（60 血、速度快）。單體高傷打它虧，<img class="sprite-sm" src="img/sprites/unit-blaze.png" alt=""> 濺射與 <img class="sprite-sm" src="img/sprites/unit-lance.png" alt=""> 貫穿是解</td></tr>
+    <tr><td><img class="sprite-lg" src="img/sprites/enemy-boss.png" alt="">暗影君王（Boss）</td><td><strong>1800</strong> + <span class="pill p-bad">🛡️ 護甲 400</span></td><td>很慢</td><td><strong>60</strong> / 1.2 秒</td><td>巨體（更早接敵、更容易被打中）。<strong>每 15 秒召喚 2 隻爪牙</strong>（有橫幅警示）；對磐石守衛<strong>4 倍碎石傷害</strong>（一口 240）——別想用肉盾耗，<strong>靠減速拖時間 + 全列火力速殺</strong></td></tr>
   </table>
   <p>所有敵人的血量與護甲<strong>每波成長 6%</strong>：第 10 波的慢行者約 308 血，無盡第 20 波約 428 血。</p>
 </section>
 
 <section id="bomb-shovel">
   <h2 class="sec">星光炸彈與鏟子</h2>
-  <h3>🌟 星光炸彈（每列一次的最後防線）</h3>
+  <h3><img class="sprite-sm" src="img/sprites/star.png" alt=""> 星光炸彈（每列一次的最後防線）</h3>
   <ul>
-    <li>草地最左緣每列亮著一顆脈動的 🌟，代表該列炸彈<strong>還在</strong></li>
+    <li>草地最左緣每列亮著一顆脈動的 <img class="sprite-sm" src="img/sprites/star.png" alt=""> ，代表該列炸彈<strong>還在</strong></li>
     <li>敵人踏進最左端的瞬間<strong>自動引爆</strong>，清光該列所有敵人——不需要手動操作</li>
-    <li>引爆後該列只剩暗色 🏡，<strong>同列再被突破就直接輸</strong></li>
+    <li>引爆後該列只剩暗色 <img class="sprite-sm" src="img/sprites/house.png" alt=""> ，<strong>同列再被突破就直接輸</strong></li>
   </ul>
   <div class="warn">炸彈是保險不是戰術。刻意放敵人進來換清場只在無盡模式的絕境值得——每用掉一顆，那一列從此裸奔。</div>
-  <h3>🥄 鏟子</h3>
+  <h3><img class="sprite-sm" src="img/sprites/shovel.png" alt=""> 鏟子</h3>
   <ul>
     <li>點鏟子 → 點單位格 = 移除並退回 <strong>50% 成本</strong>（再點一次鏟子取消）</li>
     <li>用途：重排陣型、把殘血肉盾在死前回收、後期把多餘聚光菇換成火力位</li>
@@ -207,11 +209,11 @@
   <table>
     <tr><th>波次</th><th>組成</th><th>注意事項</th></tr>
     <tr><td>1~2</td><td>慢行者 3 → 5 隻</td><td>發育期。經濟優先，火力夠擋就好</td></tr>
-    <tr><td>3~4</td><td>+ 👺 疾走者混入</td><td>開始鋪 ❄️ 寒霜蓮，注意疾走者衝哪列</td></tr>
-    <tr><td>5</td><td>+ 👹 重甲兵登場（開場第一隻）</td><td>護甲要時間磨，該列火力先集中</td></tr>
-    <tr><td>6</td><td>+ 🦇 飛翼登場（2 隻）</td><td><strong>檢查每列是否都有射手</strong>——飛翼飛越肉盾直撲防線</td></tr>
-    <tr><td>7~9</td><td>+ 🫠 裂變體，混編 11 → 18 隻遞增</td><td>爆炎花 / 貫月竹處理裂變體，肉盾全面上場</td></tr>
-    <tr><td>10</td><td>22 隻大浪 + <strong>😈 暗影君王壓軸</strong>（波次中段現身，有橫幅警示）</td><td>Boss 進場列立刻補寒霜蓮 + 爆炎花，提防它召喚的爪牙</td></tr>
+    <tr><td>3~4</td><td>+ <img class="sprite-sm" src="img/sprites/enemy-sprinter.png" alt=""> 疾走者混入</td><td>開始鋪 <img class="sprite-sm" src="img/sprites/unit-frost.png" alt=""> 寒霜蓮，注意疾走者衝哪列</td></tr>
+    <tr><td>5</td><td>+ <img class="sprite-sm" src="img/sprites/enemy-brute.png" alt=""> 重甲兵登場（開場第一隻）</td><td>護甲要時間磨，該列火力先集中</td></tr>
+    <tr><td>6</td><td>+ <img class="sprite-sm" src="img/sprites/enemy-flyer.png" alt=""> 飛翼登場（2 隻）</td><td><strong>檢查每列是否都有射手</strong>——飛翼飛越肉盾直撲防線</td></tr>
+    <tr><td>7~9</td><td>+ <img class="sprite-sm" src="img/sprites/enemy-splitter.png" alt=""> 裂變體，混編 11 → 18 隻遞增</td><td>爆炎花 / 貫月竹處理裂變體，肉盾全面上場</td></tr>
+    <tr><td>10</td><td>22 隻大浪 + <strong><img class="sprite-sm" src="img/sprites/enemy-boss.png" alt=""> 暗影君王壓軸</strong>（波次中段現身，有橫幅警示）</td><td>Boss 進場列立刻補寒霜蓮 + 爆炎花，提防它召喚的爪牙</td></tr>
   </table>
   <p>波與波之間有 <strong>5 秒</strong>空檔（畫面上方倒數）——這是補卡、鏟位、升級、撿珠的黃金時間。</p>
 </section>
@@ -220,7 +222,7 @@
   <h2 class="sec">無盡模式：增益與最高紀錄</h2>
   <ul>
     <li>前 10 波與經典戰役相同，<strong>第 11 波起公式生波</strong>：數量每波 +2（上限 30）、重甲兵占比一路爬到 40%、進場間隔壓縮到 0.8 秒；<strong>第 13 波起飛翼與裂變體加入混編</strong></li>
-    <li><strong>每 5 波（15、20、25…）出一隻 😈 暗影君王</strong>，血量跟著波次成長無上限</li>
+    <li><strong>每 5 波（15、20、25…）出一隻 <img class="sprite-sm" src="img/sprites/enemy-boss.png" alt=""> 暗影君王</strong>，血量跟著波次成長無上限</li>
     <li><strong>✨ 星光祝福</strong>：每清完 5 波（5、10、15…）跳出<strong>增益三選一</strong>，效果持續整場且可疊加——射速、傷害、光珠加值、冷卻縮短、補炸彈、單位血量、減速延長、立即光能共 8 種</li>
     <li>敗北畫面顯示「本局撐到第 N 波」；<strong>最高紀錄</strong>存在瀏覽器（localStorage），破紀錄會亮 🏅</li>
   </ul>
@@ -254,10 +256,10 @@
   <h3>標準陣型（由左至右）</h3>
   <table>
     <tr><th>欄位</th><th>放什麼</th><th>理由</th></tr>
-    <tr><td>第 1~2 欄</td><td>🍄 聚光菇（後期補第二排火力）</td><td>最安全的位置留給經濟</td></tr>
-    <tr><td>第 3~4 欄</td><td>🌵 棘刺射手（每列 1~2 支）</td><td>主力輸出，射程覆蓋全列</td></tr>
-    <tr><td>第 4~5 欄</td><td>❄️ 寒霜蓮 / 🌺 爆炎花</td><td>控場與清群，站射手前面一點無妨</td></tr>
-    <tr><td>第 6~7 欄</td><td>🪨 磐石守衛</td><td>擋路換輸出時間；太靠右會讓敵人繞不到就先咬</td></tr>
+    <tr><td>第 1~2 欄</td><td><img class="sprite-sm" src="img/sprites/unit-bloom.png" alt=""> 聚光菇（後期補第二排火力）</td><td>最安全的位置留給經濟</td></tr>
+    <tr><td>第 3~4 欄</td><td><img class="sprite-sm" src="img/sprites/unit-thorn.png" alt=""> 棘刺射手（每列 1~2 支）</td><td>主力輸出，射程覆蓋全列</td></tr>
+    <tr><td>第 4~5 欄</td><td><img class="sprite-sm" src="img/sprites/unit-frost.png" alt=""> 寒霜蓮 / <img class="sprite-sm" src="img/sprites/unit-blaze.png" alt=""> 爆炎花</td><td>控場與清群，站射手前面一點無妨</td></tr>
+    <tr><td>第 6~7 欄</td><td><img class="sprite-sm" src="img/sprites/unit-boulder.png" alt=""> 磐石守衛</td><td>擋路換輸出時間；太靠右會讓敵人繞不到就先咬</td></tr>
     <tr><td>第 8~9 欄</td><td>留空</td><td>敵人進場緩衝區，讓射手多打幾輪白嫖傷害</td></tr>
   </table>
   <h3>心法</h3>
@@ -279,7 +281,7 @@
     <tr><td>放置單位</td><td>點卡牌 → 點草地格（再點一次卡牌取消選取）</td></tr>
     <tr><td><strong>升級單位</strong></td><td>沒選卡牌時直接點場上單位（懸停顯示費用；最高 Lv3）</td></tr>
     <tr><td>收集光能</td><td>直接點擊場上的 ✨ 光珠</td></tr>
-    <tr><td>移除單位</td><td>點 🥄 鏟子 → 點單位格（退總投資 50%）</td></tr>
+    <tr><td>移除單位</td><td>點 <img class="sprite-sm" src="img/sprites/shovel.png" alt=""> 鏟子 → 點單位格（退總投資 50%）</td></tr>
     <tr><td>暫停 / 繼續</td><td><kbd>P</kbd> 或右上角 ⏸ 按鈕</td></tr>
     <tr><td>音效開關</td><td>右上角 🔊 按鈕（音效為 Web Audio 即時合成）</td></tr>
     <tr><td>遊戲說明</td><td>右上角 ❓ 按鈕（開啟時自動暫停）</td></tr>
@@ -306,7 +308,7 @@
   </div>
   <div class="card">
     <h3>Q：敵人走到最左邊為什麼沒輸？</h3>
-    <p>該列的 🌟 星光炸彈自動引爆救了你，並清光該列敵人。注意左緣那顆星星消失了——<strong>同列第二次被突破就直接敗北</strong>。</p>
+    <p>該列的 <img class="sprite-sm" src="img/sprites/star.png" alt=""> 星光炸彈自動引爆救了你，並清光該列敵人。注意左緣那顆星星消失了——<strong>同列第二次被突破就直接敗北</strong>。</p>
   </div>
   <div class="card">
     <h3>Q：最高紀錄存在哪？換裝置會不見嗎？</h3>
@@ -314,7 +316,7 @@
   </div>
   <div class="card">
     <h3>Q：飛翼怎麼擋？肉盾沒用？</h3>
-    <p>🦇 飛翼<strong>飛越所有地面單位</strong>，肉盾與地雷都攔不住，只有射手的投射物打得到。牠血只有 100，一支棘刺射手 5 發就解決——重點是<strong>每列都要有射手</strong>。</p>
+    <p><img class="sprite-sm" src="img/sprites/enemy-flyer.png" alt=""> 飛翼<strong>飛越所有地面單位</strong>，肉盾與地雷都攔不住，只有射手的投射物打得到。牠血只有 100，一支棘刺射手 5 發就解決——重點是<strong>每列都要有射手</strong>。</p>
   </div>
   <div class="card">
     <h3>Q：升級和多放一個單位哪個划算？</h3>

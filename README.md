@@ -7,8 +7,9 @@
 一款玩法靈感來自《植物大戰殭屍》的**原創** 2D 橫向塔防遊戲。
 所有角色、命名與美術均為原創，未使用任何官方素材。
 
-純 HTML + CSS + JavaScript，零依賴、零建置步驟。美術用 emoji（辨識度實測
-優於自繪向量圖），音效為 Web Audio 即時合成 — 整個專案零外部素材檔。
+純 HTML + CSS + JavaScript，零依賴、零建置步驟。角色是 AI 生成的原創點陣圖
+（`img/sprites/`，18 張共約 280KB，缺圖時自動退回 emoji），戰場背景與每關色盤由
+canvas 程式繪製，音效為 Web Audio 即時合成。
 
 ## 🚀 執行方式
 
@@ -42,22 +43,22 @@ npx serve .
 
 | 單位 | 成本 | 冷卻 | 功能 |
 |------|------|------|------|
-| 🍄 聚光菇 | 50 | 7s | 每 8 秒生產一顆光珠（+25 光能） |
-| 🌵 棘刺射手 | 100 | 7s | 同列有敵人時發射棘刺（20 傷害） |
-| ❄️ 寒霜蓮 | 75 | 9s | 霜彈傷害低（10），但使敵人減速 50%（3 秒） |
-| 🌺 爆炎花 | 150 | 10s | 火彈爆裂（26），濺射同列附近敵人（13） |
-| 🪨 磐石守衛 | 50 | 15s | 500 血高血量肉盾，純擋路 |
-| 🎋 貫月竹 | 200 | 12s | 竹槍貫穿整列，路徑上每隻敵人各吃 22 |
-| 💥 星火地雷 | 25 | 18s | 佈署 1.5 秒後敵人踩到即爆（250 範圍傷害，對飛行無效） |
+| <img src="img/sprites/unit-bloom.png" height="32" alt=""> 聚光菇 | 50 | 7s | 每 8 秒生產一顆光珠（+25 光能） |
+| <img src="img/sprites/unit-thorn.png" height="32" alt=""> 棘刺射手 | 100 | 7s | 同列有敵人時發射棘刺（20 傷害） |
+| <img src="img/sprites/unit-frost.png" height="32" alt=""> 寒霜蓮 | 75 | 9s | 霜彈傷害低（10），但使敵人減速 50%（3 秒） |
+| <img src="img/sprites/unit-blaze.png" height="32" alt=""> 爆炎花 | 150 | 10s | 火彈爆裂（26），濺射同列附近敵人（13） |
+| <img src="img/sprites/unit-boulder.png" height="32" alt=""> 磐石守衛 | 50 | 15s | 500 血高血量肉盾，純擋路 |
+| <img src="img/sprites/unit-lance.png" height="32" alt=""> 貫月竹 | 200 | 12s | 竹槍貫穿整列，路徑上每隻敵人各吃 22 |
+| <img src="img/sprites/unit-mine.png" height="32" alt=""> 星火地雷 | 25 | 18s | 佈署 1.5 秒後敵人踩到即爆（250 範圍傷害，對飛行無效） |
 
 | 敵人 | 血量 | 特性 |
 |------|------|------|
-| 🧟 暗影慢行者 | 200 | 慢速主力，遇單位停下啃咬 |
-| 👺 暗影疾走者 | 130 | 快速型，血少跑快 — 用寒霜蓮剋制 |
-| 👹 暗影重甲兵 | 180 + 🛡️150 | 護甲先吸收傷害，打破前不掉血 |
-| 🦇 暗影飛翼 | 100 | 飛越所有地面單位直撲防線，只有射手攔得住 |
-| 🫠 暗影裂變體 | 160 | 死亡分裂成 2 隻 👾 小裂體（60 血、快速） |
-| 😈 暗影君王（Boss） | 1800 + 🛡️400 | 每 15 秒召喚爪牙、對肉盾 4 倍碎石傷害；戰役最終波壓軸、無盡每 5 波現身 |
+| <img src="img/sprites/enemy-shambler.png" height="32" alt=""> 暗影慢行者 | 200 | 慢速主力，遇單位停下啃咬 |
+| <img src="img/sprites/enemy-sprinter.png" height="32" alt=""> 暗影疾走者 | 130 | 快速型，血少跑快 — 用寒霜蓮剋制 |
+| <img src="img/sprites/enemy-brute.png" height="32" alt=""> 暗影重甲兵 | 180 + 🛡️150 | 護甲先吸收傷害，打破前不掉血 |
+| <img src="img/sprites/enemy-flyer.png" height="32" alt=""> 暗影飛翼 | 100 | 飛越所有地面單位直撲防線，只有射手攔得住 |
+| <img src="img/sprites/enemy-splitter.png" height="32" alt=""> 暗影裂變體 | 160 | 死亡分裂成 2 隻 <img src="img/sprites/enemy-blobling.png" height="32" alt=""> 小裂體（60 血、快速） |
+| <img src="img/sprites/enemy-boss.png" height="32" alt=""> 暗影君王（Boss） | 1800 + 🛡️400 | 每 15 秒召喚爪牙、對肉盾 4 倍碎石傷害；戰役最終波壓軸、無盡每 5 波現身 |
 
 ## 📁 檔案結構
 
@@ -66,6 +67,7 @@ npx serve .
 ├── manifest.webmanifest  # PWA 安裝資訊
 ├── sw.js                 # Service Worker（stale-while-revalidate 離線快取）
 ├── icons/                # PWA 圖示（192/512/apple-touch，canvas 生成）
+├── img/sprites/          # 角色圖：unit-<id>.png、enemy-<id>.png、rock/shovel/star/house
 ├── css/style.css         # 全部樣式
 └── js/                   # 依 <script> 順序載入（前面定義全域，後面使用）
     ├── config.js         # 全部數值資料表：單位/敵人/波次/關卡/難度曲線（調平衡只改這檔）
@@ -73,6 +75,8 @@ npx serve .
     ├── progress.js       # 關卡星級與成就（localStorage）
     ├── sfx.js            # Web Audio 合成音效 + 開關
     ├── grid.js           # 5×9 格子與座標換算
+    ├── sprites.js        # 角色圖載入、缺圖判定、同形狀染色剪影（受擊閃白/結冰）
+    ├── scenery.js        # 程式繪製的戰場背景、每關色盤 THEMES、螢火蟲與風痕
     ├── resources.js      # 光能與光珠（生成/下落/點擊收集/過期）
     ├── perks.js          # 無盡模式 Roguelike 增益（三選一資料表 + 抽選）
     ├── projectiles.js    # 投射物飛行與命中（減速 / 濺射 / 貫穿）
@@ -80,13 +84,13 @@ npx serve .
     ├── enemies.js        # 敵人移動、護甲、減速、飛行、分裂、Boss 召喚/碎石
     ├── waves.js          # 波次機、關卡規則套用、無盡公式生波
     ├── ui.js             # 卡牌列、選關/成就/增益畫面、toast、畫面切換
-    ├── render.js         # canvas 渲染層（等級星星、飛行浮動、地雷警戒、巨石格）
+    ├── render.js         # canvas 渲染層（角色落地/呼吸/後座、受擊閃白、發光投射物、畫面震動）
     └── main.js           # 遊戲迴圈、輸入（滑鼠+觸控）、SW 註冊
 ```
 
 ## 🔧 後續可擴充方向
 
 1. **音效升級**：`sfx.js` 的 `play()` 換成真音檔（Howler.js 或原生 Audio），介面不用動
-2. **美術升級**：委託美術做 sprite sheet（自繪 SVG 已試過，小尺寸辨識度不如 emoji，見 git 歷史 955ab6d）
+2. **美術再升級**：角色目前是單張靜態圖 + 程式動畫（呼吸、搖擺、後座）；要更生動可換成多格 sprite sheet（走路/攻擊分鏡）。換圖只要覆蓋 `img/sprites/` 同名檔，程式不用動
 3. **線上排行榜**：無盡波次紀錄接 serverless KV 做全球榜（注意：純前端分數可偽造，只適合做趣味榜）
 4. **更多內容**：`ENEMY_TYPES`、`UNIT_TYPES`、`LEVELS`、`PERK_POOL` 都是加一筆就生效的資料表

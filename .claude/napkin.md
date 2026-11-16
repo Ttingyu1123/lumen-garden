@@ -17,6 +17,8 @@
 - (2026-07-16) **新增 js 檔要同步三處**：index.html `<script>` 順序（依賴在前）、sw.js `ASSETS` 清單、（新 UI 時）style.css。漏 sw.js = 離線版缺檔。
 - (2026-07-13) 刻意不用 ES modules（file:// 雙擊即玩）；全域物件依 script 順序互相依賴。
 - (2026-11-16) canvas 畫角色只能走 `Renderer.sprite()`（腳底對齊 + 缺圖退回 emoji）。新增單位/敵人：圖存 `img/sprites/unit-<id>.png` 或 `enemy-<id>.png`，並加進 sw.js 清單——清單列了不存在的檔會讓整個 SW 安裝失敗。
+- (2026-11-16) 角色圖有三處在用：遊戲（sprites.js 自動推導）、manual.html（`.sprite-lg` / `.sprite-sm` 的 `<img>`）、README 表格。新增或改名角色時三處一起改；只換圖（覆蓋同名檔）則全部自動跟上。
+- (2026-11-16) 巨石障礙（`rock.png`）刻意畫成冷藍立石 + 符文、不長苔，用來和長苔暖色的磐石守衛區分（用戶回報兩者太像）。重生任一張時保持這個對比。
 - (2026-11-16) 每關色盤在 scenery.js `THEMES`（key = LEVELS id + `endless`），顏色限 `#rrggbb`。新增關卡沒配色盤會退回 classic。
 - (2026-07-12) canvas 畫 emoji 只能走 `Renderer.emoji()`（強制不透明 fillStyle + emoji 字型堆疊），否則褪色/單色（見 git 歷史兩個 v1 渲染 bug）。
 - (2026-07-16) 數值/資料表全在 config.js（UNIT_TYPES/ENEMY_TYPES/WAVES/LEVELS）+ perks.js `PERK_POOL`；卡牌列與說明表由資料表自動生成，加內容不用動 UI。
