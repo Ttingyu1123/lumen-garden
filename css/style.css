@@ -131,6 +131,8 @@ body {
 }
 
 .help-table .sprite-icon { height: 26px; margin-right: 4px; }
+/* 說明文字裡的行內角色圖 */
+.sprite-inline { height: 1.5em; width: auto; vertical-align: -0.35em; margin: 0 1px; }
 
 /* 開始畫面主視覺：我方 vs 暗影族 */
 #hero-row {
