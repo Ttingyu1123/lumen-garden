@@ -5,7 +5,18 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: #10182b;
+  /* 夜空：兩團遠光 + 幾顆星點（純 CSS，不需圖檔） */
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, .7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 81% 9%, rgba(255, 233, 176, .8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 34% 62%, rgba(255, 255, 255, .5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 67% 78%, rgba(255, 255, 255, .5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 92% 44%, rgba(200, 220, 255, .7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 86%, rgba(255, 255, 255, .5) 50%, transparent 51%),
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(90, 110, 200, .28), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 100% 100%, rgba(120, 70, 180, .22), transparent 70%),
+    #0d1424;
+  background-attachment: fixed;
   color: #eef3ff;
   font-family: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
   display: flex;
@@ -87,7 +98,7 @@ body {
 .card {
   position: relative;
   width: 96px;
-  background: #1c2742;
+  background: linear-gradient(180deg, #25335a, #182139);
   border: 2px solid #35476e;
   border-radius: 10px;
   padding: 8px 4px 6px;
@@ -106,7 +117,42 @@ body {
 
 .card.unaffordable { filter: grayscale(.7) brightness(.7); }
 
-.card .card-emoji { font-size: 30px; line-height: 1.2; }
+.card .card-emoji { font-size: 30px; line-height: 1.2; height: 44px; }
+
+/* 角色小圖（卡牌、說明表、主視覺共用；載入失敗時 ui.js 會換回 emoji 文字） */
+.sprite-icon {
+  height: 44px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  vertical-align: middle;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .55));
+  -webkit-user-drag: none;
+}
+
+.help-table .sprite-icon { height: 26px; margin-right: 4px; }
+
+/* 開始畫面主視覺：我方 vs 暗影族 */
+#hero-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin: 4px -24px 16px;
+}
+
+.hero-side { display: flex; align-items: flex-end; gap: 2px; font-size: 30px; flex-shrink: 0; }
+.hero-side .sprite-icon { height: 40px; max-width: none; }
+.hero-side .sprite-icon:nth-child(2) { height: 56px; }
+
+.hero-vs {
+  align-self: center;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #ff8a8a;
+  text-shadow: 0 0 10px rgba(255, 80, 80, .6);
+}
 .card .card-name  { font-size: 12px; margin-top: 2px; color: #cdd9f5; }
 .card .card-cost  { font-size: 13px; font-weight: 700; color: #ffe08a; }
 
@@ -130,6 +176,7 @@ canvas {
   display: block;
   border-radius: 12px;
   border: 2px solid #35476e;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .55), 0 0 0 1px rgba(255, 217, 122, .08);
   background: #16203a;
   cursor: pointer;
   /* 內部解析度固定 912×528，CSS 縮放跟隨螢幕；
@@ -191,8 +238,9 @@ canvas {
 }
 
 .screen-box {
-  background: #1c2742;
+  background: linear-gradient(180deg, #223058, #161f38);
   border: 2px solid #35476e;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
   border-radius: 16px;
   padding: 36px 48px;
   text-align: center;
@@ -203,6 +251,7 @@ canvas {
   font-size: 34px;
   margin-bottom: 8px;
   color: #ffd97a;
+  text-shadow: 0 0 16px rgba(255, 217, 122, .45);
 }
 
 .screen-sub { color: #cdd9f5; margin-bottom: 18px; }
@@ -305,7 +354,11 @@ canvas {
   .hud-btn { width: 36px; height: 36px; font-size: 15px; }
 
   .card { width: 64px; padding: 5px 2px 4px; }
-  .card .card-emoji { font-size: 22px; }
+  .card .card-emoji { font-size: 22px; height: 32px; }
+  .card .sprite-icon { height: 32px; }
+  #hero-row { margin: 4px 0 12px; gap: 6px; }
+  .hero-side .sprite-icon { height: 32px; }
+  .hero-side .sprite-icon:nth-child(2) { height: 44px; }
   .card .card-name  { font-size: 10px; }
   .card .card-cost  { font-size: 11px; }
 

@@ -1,16 +1,24 @@
 /* ============================================================
-   render.js — canvas 渲染層（從 main.js 抽出）
-   只讀狀態、不改狀態。動畫：單位放置彈出、敵人受傷閃白、
-   減速結冰染色、投射物尾焰、光珠脈動、倒數提示、暫停遮罩。
+   render.js — canvas 渲染層
+   只讀狀態、不改狀態。背景與環境光點在 scenery.js，
+   角色圖在 sprites.js（缺圖自動退回 emoji）。
+   動畫：待機呼吸、射擊後座、敵人走路搖擺與撲咬、輪廓閃白、
+   結冰染色、投射物柔光、爆裂火花、大爆炸畫面震動。
    ============================================================ */
 
 const Renderer = {
   ctx: null,
 
+  FOOT: 36,        // 角色腳底相對列中心的 y 偏移（格高 96，腳踩在格子下緣上方 12px）
+  UNIT_H: 78,      // 防禦單位顯示高度
+  ENEMY_H: 1.45,   // 敵人顯示高度 = 碰撞尺寸 × 此倍率（顯示略大於碰撞框）
+  SHAKE_MIN_R: 70, // 半徑達此值的爆裂（地雷、星光炸彈、Boss 死亡）才震動畫面
+
   init(canvas) {
     canvas.width = CONFIG.CANVAS_W;
     canvas.height = CONFIG.CANVAS_H;
     this.ctx = canvas.getContext('2d');
+    Sprites.init();
   },
 
   /**
@@ -24,9 +32,8 @@ const Renderer = {
 
   /**
    * 畫 emoji 的唯一入口。
-   * 彩色字形會「乘上 fillStyle 的透明度」——若前面畫過半透明色塊
-   * （如防線帶 rgba(...,.12)），忘記重設就會整批 emoji 變 12% 透明。
-   * 這裡固定先設不透明 fillStyle 再畫，杜絕狀態洩漏。
+   * 彩色字形會「乘上 fillStyle 的透明度」——若前面畫過半透明色塊，
+   * 忘記重設就會整批 emoji 變透明。這裡固定先設不透明 fillStyle 再畫。
    */
   emoji(text, x, y, size) {
     const ctx = this.ctx;
@@ -35,38 +42,91 @@ const Renderer = {
     ctx.fillText(text, x, y);
   },
 
-  /* ---------- 各層 ---------- */
-
-  drawGrid() {
+  /**
+   * 畫角色的唯一入口：腳底中心對齊 (x, footY)，塞進邊長 box 的方框。
+   * 有圖用圖，沒圖退回 emoji。
+   * o: { rot, sx, sy, alpha, tint, tintAlpha }；tint = 疊一層同輪廓純色
+   */
+  sprite(key, emoji, x, footY, box, o = {}) {
     const ctx = this.ctx;
-    for (let r = 0; r < CONFIG.ROWS; r++) {
-      for (let c = 0; c < CONFIG.COLS; c++) {
-        const o = Grid.cellOrigin(r, c);
-        // 棋盤式雙色夜間草地
-        ctx.fillStyle = (r + c) % 2 === 0 ? '#2c4a33' : '#26402c';
-        ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
-        // 巨石格（關卡障礙）：暗底 + 山岩
-        if (G.blocked[r] && G.blocked[r][c]) {
-          ctx.fillStyle = 'rgba(10, 14, 24, .5)';
-          ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
-          this.emoji('⛰️', o.x + CONFIG.CELL_W / 2, o.y + CONFIG.CELL_H / 2, 44);
-        }
+    const img = Sprites.get(key);
+    ctx.save();
+    ctx.translate(x, footY);
+    if (o.rot) ctx.rotate(o.rot);
+    ctx.scale(o.sx || 1, o.sy || 1);
+    if (o.alpha !== undefined) ctx.globalAlpha = o.alpha;
+
+    if (img) {
+      // 寬扁的圖（飛翼）允許比方框寬 30%，不然會被縮得太小
+      const scale = Math.min(box / img.naturalHeight, box * 1.3 / img.naturalWidth);
+      const w = img.naturalWidth * scale, h = img.naturalHeight * scale;
+      ctx.drawImage(img, -w / 2, -h, w, h);
+      if (o.tint && o.tintAlpha > 0) {
+        ctx.globalAlpha = (o.alpha === undefined ? 1 : o.alpha) * Math.min(1, o.tintAlpha);
+        ctx.drawImage(Sprites.tinted(key, o.tint), -w / 2, -h, w, h);
+      }
+    } else {
+      this.emoji(emoji, 0, -box * 0.5, Math.round(box * 0.62));
+      if (o.tint && o.tintAlpha > 0) {
+        ctx.fillStyle = o.tint;
+        ctx.globalAlpha = Math.min(1, o.tintAlpha) * 0.6;
+        ctx.beginPath();
+        ctx.arc(0, -box * 0.5, box * 0.36, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
-    // 左側防線：星光炸彈還在的列亮 🌟（最後防線），用掉的列剩暗色 🏡
-    ctx.fillStyle = 'rgba(255, 217, 122, .12)';
-    ctx.fillRect(0, CONFIG.GRID_Y, CONFIG.GRID_X, CONFIG.ROWS * CONFIG.CELL_H);
+    ctx.restore();
+  },
+
+  /** 腳下橢圓影子：讓角色踩在地上而不是浮在格子上 */
+  shadow(x, y, rx, alpha) {
+    const ctx = this.ctx;
+    ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+    ctx.beginPath();
+    ctx.ellipse(x, y, rx, Math.max(3, rx * 0.26), 0, 0, Math.PI * 2);
+    ctx.fill();
+  },
+
+  /** 帶深色描邊的文字（疊在任何底色上都讀得到） */
+  label(text, x, y, font, color) {
+    const ctx = this.ctx;
+    ctx.font = font;
+    ctx.lineWidth = 4;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(8, 12, 24, .8)';
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+  },
+
+  /* ---------- 各層 ---------- */
+
+  drawField() {
+    const ctx = this.ctx;
+    ctx.drawImage(Scenery.background(), 0, 0);
+
+    // 巨石格（關卡障礙）
     for (let r = 0; r < CONFIG.ROWS; r++) {
-      const y = Grid.rowCenterY(r);
+      for (let c = 0; c < CONFIG.COLS; c++) {
+        if (!(G.blocked[r] && G.blocked[r][c])) continue;
+        const o = Grid.cellOrigin(r, c);
+        const cx = o.x + CONFIG.CELL_W / 2, footY = o.y + CONFIG.CELL_H / 2 + this.FOOT;
+        ctx.fillStyle = 'rgba(10, 14, 24, .35)';
+        ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
+        this.shadow(cx, footY - 2, 36, 0.4);
+        this.sprite('rock', '⛰️', cx, footY, 74);
+      }
+    }
+
+    // 左側防線：星光炸彈還在的列亮星燈（最後防線），用掉的列剩暗掉的小屋
+    for (let r = 0; r < CONFIG.ROWS; r++) {
+      const y = Grid.rowCenterY(r), x = CONFIG.GRID_X / 2 + 2;
       if (G.rowBombs[r]) {
-        const pulse = 1 + Math.sin(G.time * 3 + r) * .15;
-        ctx.globalAlpha = .8 + Math.sin(G.time * 3 + r) * .2;
-        this.emoji('🌟', CONFIG.GRID_X / 2, y, Math.round(20 * pulse));
-        ctx.globalAlpha = 1;
+        const wave = Math.sin(G.time * 3 + r);
+        Scenery.drawGlow(ctx, '#ffd97a', x, y, 46 + wave * 6, 0.55 + wave * 0.15);
+        this.sprite('star', '🌟', x, y + 13, 26 * (1 + wave * 0.08));
       } else {
-        ctx.globalAlpha = .45;
-        this.emoji('🏡', CONFIG.GRID_X / 2, y, 20);
-        ctx.globalAlpha = 1;
+        this.sprite('house', '🏡', x, y + 12, 24, { alpha: 0.5 });
       }
     }
   },
@@ -84,11 +144,9 @@ const Renderer = {
       const cost = Units.upgradeCost(unit);
       ctx.fillStyle = 'rgba(255, 217, 122, .22)';
       ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
-      ctx.font = 'bold 14px sans-serif';
-      ctx.fillStyle = '#ffd97a';
-      ctx.fillText(
+      this.label(
         cost === null ? 'Lv MAX' : `⬆ 升級 ✨${cost}`,
-        o.x + CONFIG.CELL_W / 2, o.y + 12
+        o.x + CONFIG.CELL_W / 2, o.y + 12, 'bold 14px sans-serif', '#ffd97a'
       );
       return;
     }
@@ -101,14 +159,12 @@ const Renderer = {
     }
 
     const blocked = G.blocked[hoverCell.row][hoverCell.col];
-    ctx.fillStyle = occupied || blocked ? 'rgba(255, 80, 80, .3)' : 'rgba(255, 255, 255, .22)';
+    ctx.fillStyle = occupied || blocked ? 'rgba(255, 80, 80, .3)' : 'rgba(255, 255, 255, .18)';
     ctx.fillRect(o.x, o.y, CONFIG.CELL_W, CONFIG.CELL_H);
     if (!occupied && !blocked) {
-      // 半透明預覽
-      ctx.globalAlpha = .55;
       const c = Grid.cellCenter(hoverCell.row, hoverCell.col);
-      this.emoji(UNIT_TYPES[G.selectedType].emoji, c.x, c.y, 46);
-      ctx.globalAlpha = 1;
+      const def = UNIT_TYPES[G.selectedType];
+      this.sprite(`unit-${def.id}`, def.emoji, c.x, c.y + this.FOOT, this.UNIT_H, { alpha: 0.55 });
     }
   },
 
@@ -116,8 +172,8 @@ const Renderer = {
   drawHpBar(x, y, w, ratio) {
     if (ratio >= 1) return;                    // 滿血不畫，畫面乾淨
     const ctx = this.ctx;
-    ctx.fillStyle = 'rgba(0,0,0,.55)';
-    ctx.fillRect(x - w / 2, y, w, 5);
+    ctx.fillStyle = 'rgba(0,0,0,.6)';
+    ctx.fillRect(x - w / 2 - 1, y - 1, w + 2, 7);
     ctx.fillStyle = ratio > .5 ? '#7ee081' : ratio > .25 ? '#ffd97a' : '#ff7a7a';
     ctx.fillRect(x - w / 2, y, w * Math.max(0, ratio), 5);
   },
@@ -126,82 +182,115 @@ const Renderer = {
     const ctx = this.ctx;
     for (const u of G.units) {
       const c = Grid.cellCenter(u.row, u.col);
-      // 放置彈出動畫：0.25 秒內從 55% 長到 100%
-      const pop = Math.min(1, u.age / 0.25);
+      const footY = c.y + this.FOOT;
+      const key = `unit-${u.def.id}`;
+      const barY = c.y - 46;
 
-      // 地雷：佈署中半透明縮小，警戒後脈動
+      // 地雷：佈署中半透明縮小，警戒後脈動發光
       if (u.def.type === 'mine') {
         const armed = u.timer >= u.def.mine.armTime;
-        const pulse = armed ? 1 + Math.sin(G.time * 6) * 0.12 : 0.75;
-        if (!armed) ctx.globalAlpha = 0.55;
-        this.emoji(u.def.emoji, c.x, c.y + 8, Math.round(34 * pulse));
-        ctx.globalAlpha = 1;
-        this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
+        const pulse = armed ? 1 + Math.sin(G.time * 6) * 0.08 : 0.8;
+        this.shadow(c.x, footY - 2, 22, 0.3);
+        if (armed) Scenery.drawGlow(ctx, '#ffb35a', c.x, footY - 26, 70, 0.3 + Math.sin(G.time * 6) * 0.15);
+        this.sprite(key, u.def.emoji, c.x, footY, 54 * pulse, { alpha: armed ? 1 : 0.55 });
+        this.drawHpBar(c.x, barY + 20, 52, u.hp / u.maxHp);
         continue;
       }
 
-      const size = Math.round(46 * (0.55 + 0.45 * pop));
-      this.emoji(u.def.emoji, c.x, c.y + 2, size);
-      // 等級星星：Lv2 一顆、Lv3 兩顆
-      for (let i = 0; i < u.level - 1; i++) {
-        this.emoji('⭐', c.x - 30 + i * 15, c.y - 30, 13);
+      // 放置彈出：0.25 秒內從 55% 長到 100%
+      const pop = Math.min(1, u.age / 0.25);
+      // 待機呼吸：每個單位相位錯開，才不會整排同步起伏
+      const breathe = 1 + Math.sin(G.time * 2.2 + u.row * 1.3 + u.col * 0.7) * 0.03;
+      // 射擊後座：開火瞬間往後縮並壓扁，0.2 秒內彈回
+      const sinceShot = G.time - (u.shotAt === undefined ? -9 : u.shotAt);
+      const kick = sinceShot >= 0 && sinceShot < 0.2 ? 1 - sinceShot / 0.2 : 0;
+
+      this.shadow(c.x, footY - 2, 28, 0.34);
+
+      // 聚光菇：越接近產出光珠越亮
+      if (u.def.type === 'producer') {
+        const ready = Math.min(1, u.timer / Units.produceInterval(u));
+        Scenery.drawGlow(ctx, '#ffe08a', c.x, c.y, 110, 0.12 + ready * 0.38);
       }
-      this.drawHpBar(c.x, c.y - 38, 52, u.hp / u.maxHp);
+
+      this.sprite(key, u.def.emoji, c.x - kick * 5, footY, this.UNIT_H * (0.55 + 0.45 * pop), {
+        sx: 1 + kick * 0.08,
+        sy: breathe * (1 - kick * 0.07),
+      });
+
+      // 等級星星：Lv2 一顆、Lv3 兩顆（放左下角，不擋血條）
+      for (let i = 0; i < u.level - 1; i++) {
+        this.emoji('⭐', c.x - 34 + i * 15, c.y + 36, 13);
+      }
+      this.drawHpBar(c.x, barY, 52, u.hp / u.maxHp);
     }
   },
 
   drawEnemies() {
     const ctx = this.ctx;
-    for (const e of G.enemies) {
+    // 由上列畫到下列：下面那列的角色蓋在上面那列前面
+    const ordered = [...G.enemies].sort((a, b) => a.row - b.row);
+    for (const e of ordered) {
       const rowY = Grid.rowCenterY(e.row);
-      // 飛行型：上下浮動 + 地面影子
-      const fly = e.def.flying ? -16 + Math.sin(G.time * 4 + e.x * 0.05) * 4 : 0;
-      const y = rowY + fly;
-      const s = e.def.size;              // 身體尺寸（Boss 88，其餘 52）
-      const draw = s * 1.15;             // 視覺略大於碰撞框
+      const s = e.def.size;
       const half = s / 2;
-      // 攻擊中的敵人微微前傾抖動
-      const shake = e.target ? Math.sin(G.time * 20) * 2 : 0;
+      const box = s * this.ENEMY_H;
+      const groundY = rowY + this.FOOT;
+      const flying = !!e.def.flying;
+      const walking = !e.target;
+      const key = `enemy-${e.typeId}`;
 
-      if (e.def.flying) {
-        ctx.fillStyle = 'rgba(0, 0, 0, .3)';
-        ctx.beginPath();
-        ctx.ellipse(e.x, rowY + half * 0.85, half * 0.6, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      // 走路：左右搖擺 + 小跳步，步頻跟移動速度走；減速時步伐也變慢
+      const pace = (4 + e.def.speed * 0.18) * (e.slowT > 0 ? CONFIG.SLOW_FACTOR : 1);
+      const phase = G.time * pace + e.x * 0.05;
+      const rot = walking && !flying ? Math.sin(phase) * 0.07 : 0;
+      const hop = walking && !flying ? -Math.abs(Math.sin(phase)) * 2.5 : 0;
+      // 攻擊：配合攻擊計時往前撲一下
+      const lunge = e.target
+        ? -Math.sin(Math.min(1, e.attackTimer / e.def.attackInterval) * Math.PI) * 6 : 0;
+      // 飛行：離地浮動 + 拍翅（縱向伸縮）
+      const lift = flying ? -22 + Math.sin(G.time * 4 + e.x * 0.05) * 4 : 0;
+      const flap = flying ? 1 + Math.sin(G.time * 11 + e.x * 0.1) * 0.07 : 1;
+      const footY = groundY + lift + hop;
+
+      this.shadow(e.x, groundY - 2, half * (flying ? 0.6 : 0.85), flying ? 0.22 : 0.36);
+      // 暗影族共通的腳下紫光：一眼分得出敵我
+      Scenery.drawGlow(ctx, '#8a5cff', e.x, groundY - 6, s * 1.9, 0.22);
 
       // 減速中：腳下結冰光圈
       if (e.slowT > 0) {
-        ctx.fillStyle = 'rgba(120, 200, 255, .3)';
+        ctx.fillStyle = 'rgba(140, 215, 255, .38)';
         ctx.beginPath();
-        ctx.arc(e.x, y + half * 0.85, half * 0.85, 0, Math.PI * 2);
+        ctx.ellipse(e.x, groundY - 2, half * 1.05, half * 0.32, 0, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      this.emoji(e.def.emoji, e.x + shake, y + 2, Math.round(draw * 0.82));   // 一般 48px、Boss 83px
+      // 受傷閃白優先於結冰染藍
+      const flash = e.flashT > 0 ? e.flashT / 0.15 : 0;
+      this.sprite(key, e.def.emoji, e.x + lunge, footY, box, {
+        rot,
+        sy: flap,
+        tint: flash > 0 ? '#ffffff' : (e.slowT > 0 ? '#7fd0ff' : null),
+        tintAlpha: flash > 0 ? flash * 0.85 : 0.35,
+      });
+
+      const top = footY - box;
 
       // 護甲未破：右上角小盾牌
       if (e.armor > 0) {
-        this.emoji('🛡️', e.x + half * 0.8, y - half * 0.85, 18);
+        this.emoji('🛡️', e.x + half * 0.9, Math.max(12, top + 14), 18);
       }
 
-      // 受傷閃白
-      if (e.flashT > 0) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${e.flashT / 0.15 * 0.6})`;
-        ctx.beginPath();
-        ctx.arc(e.x + shake, y, half, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // 護甲條（灰）疊在血條上方
+      // 護甲條（灰）疊在血條上方；Boss 在最上列時夾在畫面內
       const barW = s;
+      const barY = Math.max(10, top - 6);
       if (e.maxArmor > 0 && e.armor > 0) {
-        ctx.fillStyle = 'rgba(0,0,0,.55)';
-        ctx.fillRect(e.x - barW / 2, y - half - 22, barW, 4);
+        ctx.fillStyle = 'rgba(0,0,0,.6)';
+        ctx.fillRect(e.x - barW / 2 - 1, barY - 8, barW + 2, 6);
         ctx.fillStyle = '#c0c8d8';
-        ctx.fillRect(e.x - barW / 2, y - half - 22, barW * (e.armor / e.maxArmor), 4);
+        ctx.fillRect(e.x - barW / 2, barY - 7, barW * (e.armor / e.maxArmor), 4);
       }
-      this.drawHpBar(e.x, y - half - 14, barW, e.hp / e.maxHp);
+      this.drawHpBar(e.x, barY, barW, e.hp / e.maxHp);
     }
   },
 
@@ -209,32 +298,37 @@ const Renderer = {
     const ctx = this.ctx;
     for (const p of G.projectiles) {
       // 微幅上下飄，讓飛行有生命感
-      const wobble = Math.sin(p.age * 25) * 2;
+      const y = p.y + Math.sin(p.age * 25) * 2;
 
-      // 貫穿彈：畫成竹槍長條
+      // 貫穿彈：竹槍長條 + 槍尖柔光
       if (p.pierce) {
+        Scenery.drawGlow(ctx, p.color, p.x + 4, y, 34, 0.55);
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - 16, p.y + wobble - 2.5, 26, 5);
+        ctx.fillRect(p.x - 16, y - 2.5, 26, 5);
         ctx.globalAlpha = .35;
-        ctx.fillRect(p.x - 30, p.y + wobble - 1.5, 12, 3);
+        ctx.fillRect(p.x - 32, y - 1.5, 14, 3);
         ctx.globalAlpha = 1;
         continue;
       }
 
+      Scenery.drawGlow(ctx, p.color, p.x, y, 38, 0.75);
+      // 三節尾焰
       ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y + wobble, 6, 0, Math.PI * 2);
-      ctx.fill();
-      // 兩節尾焰
-      ctx.globalAlpha = .4;
-      ctx.beginPath();
-      ctx.arc(p.x - 9, p.y + wobble, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = .18;
-      ctx.beginPath();
-      ctx.arc(p.x - 17, p.y + wobble, 3, 0, Math.PI * 2);
-      ctx.fill();
+      for (let i = 1; i <= 3; i++) {
+        ctx.globalAlpha = 0.5 - i * 0.13;
+        ctx.beginPath();
+        ctx.arc(p.x - i * 8, y, 5.5 - i * 1.1, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, y, 6, 0, Math.PI * 2);
+      ctx.fill();
+      // 亮芯
+      ctx.fillStyle = 'rgba(255, 255, 255, .8)';
+      ctx.beginPath();
+      ctx.arc(p.x + 1, y - 1, 2.6, 0, Math.PI * 2);
+      ctx.fill();
     }
   },
 
@@ -250,25 +344,26 @@ const Renderer = {
       ctx.beginPath();
       ctx.arc(o.x, o.y, 17, 0, Math.PI * 2);
       ctx.fill();
+      Scenery.drawGlow(ctx, '#ffd97a', o.x, o.y, 64 * pulse, 0.6);
       ctx.strokeStyle = 'rgba(255, 213, 94, .9)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(o.x, o.y, 17 * pulse, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.fillStyle = 'rgba(255, 224, 138, .3)';
-      ctx.beginPath();
-      ctx.arc(o.x, o.y, 22 * pulse, 0, Math.PI * 2);
-      ctx.fill();
       this.emoji('✨', o.x, o.y + 1, 24);
     }
   },
 
-  /** 爆裂特效：擴散光環 + 放射短刺（取代 emoji 💥） */
+  /** 爆裂特效：中心閃光 + 擴散光環 + 放射短刺 + 飛散火花 */
   drawBursts() {
     const ctx = this.ctx;
     for (const b of G.bursts) {
       const t = b.age / 0.45;                 // 0 → 1
-      const radius = b.r * (0.35 + 0.65 * t);
+      const ease = 1 - (1 - t) * (1 - t);     // 先快後慢
+      const radius = b.r * (0.35 + 0.65 * ease);
+
+      Scenery.drawGlow(ctx, b.color, b.x, b.y, b.r * 2.6, (1 - t) * 0.7);
+
       ctx.globalAlpha = 1 - t;
       ctx.strokeStyle = b.color;
       ctx.lineWidth = 3 * (1 - t) + 1;
@@ -284,17 +379,31 @@ const Renderer = {
         ctx.lineTo(b.x + Math.cos(ang) * r2, b.y + Math.sin(ang) * r2);
         ctx.stroke();
       }
+      // 飛散火花：角度由爆點座標決定，同一顆爆裂每幀方向一致
+      ctx.fillStyle = b.color;
+      const sparks = b.r >= this.SHAKE_MIN_R ? 12 : 7;
+      for (let i = 0; i < sparks; i++) {
+        const ang = i * (Math.PI * 2 / sparks) + b.x * 0.37;
+        const dist = b.r * (0.4 + 0.9 * ease) * (0.75 + (i % 3) * 0.2);
+        ctx.beginPath();
+        ctx.arc(
+          b.x + Math.cos(ang) * dist,
+          b.y + Math.sin(ang) * dist + t * t * 14,   // 末段微微下墜
+          (1 - t) * 3.2 + 0.4, 0, Math.PI * 2
+        );
+        ctx.fill();
+      }
       ctx.globalAlpha = 1;
     }
   },
 
   drawFloaters() {
     const ctx = this.ctx;
-    ctx.font = 'bold 18px sans-serif';
     for (const f of G.floaters) {
-      ctx.fillStyle = `rgba(255, 224, 138, ${1 - f.age})`;
-      ctx.fillText(f.text, f.x, f.y);
+      ctx.globalAlpha = Math.max(0, 1 - f.age);
+      this.label(f.text, f.x, f.y, 'bold 18px sans-serif', '#ffe08a');
     }
+    ctx.globalAlpha = 1;
   },
 
   /** 開場準備 / 波間空檔的倒數提示 */
@@ -302,10 +411,7 @@ const Renderer = {
     if (G.phase !== 'playing') return;
     const cd = Waves.countdown();
     if (!cd) return;
-    const ctx = this.ctx;
-    ctx.font = 'bold 22px sans-serif';
-    ctx.fillStyle = 'rgba(255, 224, 138, .9)';
-    ctx.fillText(`${cd.text}  ${cd.secs} 秒`, CONFIG.CANVAS_W / 2, 14);
+    this.label(`${cd.text}  ${cd.secs} 秒`, CONFIG.CANVAS_W / 2, 14, 'bold 22px sans-serif', '#ffe08a');
   },
 
   /** 暫停遮罩 */
@@ -322,20 +428,40 @@ const Renderer = {
     ctx.fillText('按右上角 ▶ 或 P 鍵繼續', CONFIG.CANVAS_W / 2, CONFIG.CANVAS_H / 2 + 36);
   },
 
+  /** 大爆炸的畫面震動幅度（px）：取場上最強的一顆，隨爆裂老化衰減 */
+  shakeAmount() {
+    let amp = 0;
+    for (const b of G.bursts) {
+      if (b.r < this.SHAKE_MIN_R) continue;
+      amp = Math.max(amp, (1 - b.age / 0.45) * Math.min(1, b.r / 85) * 7);
+    }
+    return amp;
+  },
+
   /* ---------- 主渲染 ---------- */
 
   render(hoverCell) {
     const ctx = this.ctx;
+    const now = performance.now() / 1000;
     ctx.clearRect(0, 0, CONFIG.CANVAS_W, CONFIG.CANVAS_H);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    this.drawGrid();
+
+    // 世界層（會跟著震動）
+    const amp = G.paused ? 0 : this.shakeAmount();
+    ctx.save();
+    if (amp > 0) ctx.translate(Math.sin(now * 90) * amp, Math.cos(now * 73) * amp);
+    this.drawField();
     this.drawHover(hoverCell);
     this.drawUnits();
     this.drawEnemies();
     this.drawProjectiles();
     this.drawBursts();
     this.drawOrbs();
+    Scenery.drawAmbient(ctx, now);
+    ctx.restore();
+
+    // 介面層（不震動）
     this.drawFloaters();
     this.drawCountdown();
     this.drawPaused();

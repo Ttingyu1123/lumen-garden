@@ -26,6 +26,7 @@ const UI = {
 
     this.buildCardBar();
     this.buildHelp();
+    this.buildHero();
     this.onStart = handlers.onStart;
 
     // 戰役 → 先開選關畫面；無盡直接開；重開沿用本局模式與關卡
@@ -70,6 +71,22 @@ const UI = {
     document.getElementById('btn-close-help').addEventListener('click', closeHelp);
   },
 
+  /** 角色小圖的 HTML：圖檔載入失敗時自動換回 emoji 文字 */
+  icon(key, emoji) {
+    return `<img class="sprite-icon" src="${Sprites.src(key)}" alt="${emoji}" ` +
+      `onerror="this.replaceWith(document.createTextNode(this.alt))">`;
+  },
+
+  /** 開始畫面主視覺：我方陣容 vs 暗影族 */
+  buildHero() {
+    const side = (prefix, table, ids) =>
+      ids.map(id => this.icon(`${prefix}-${id}`, table[id].emoji)).join('');
+    document.getElementById('hero-row').innerHTML =
+      `<span class="hero-side">${side('unit', UNIT_TYPES, ['bloom', 'thorn', 'blaze'])}</span>` +
+      `<span class="hero-vs">VS</span>` +
+      `<span class="hero-side">${side('enemy', ENEMY_TYPES, ['sprinter', 'boss', 'brute'])}</span>`;
+  },
+
   /** 依 UNIT_TYPES 生成卡牌 */
   buildCardBar() {
     this.els.cardBar.innerHTML = '';
@@ -79,7 +96,7 @@ const UI = {
       card.className = 'card';
       card.dataset.type = def.id;
       card.innerHTML = `
-        <div class="card-emoji">${def.emoji}</div>
+        <div class="card-emoji">${this.icon(`unit-${def.id}`, def.emoji)}</div>
         <div class="card-name">${def.name}</div>
         <div class="card-cost">✨ ${def.cost}</div>
         <div class="card-cd" style="height:0"></div>
@@ -94,7 +111,7 @@ const UI = {
     const shovel = document.createElement('div');
     shovel.className = 'card card-shovel';
     shovel.innerHTML = `
-      <div class="card-emoji">🥄</div>
+      <div class="card-emoji">${this.icon('shovel', '🥄')}</div>
       <div class="card-name">鏟子</div>
       <div class="card-cost">退 50%</div>
     `;
@@ -111,10 +128,10 @@ const UI = {
   /** 說明 overlay 的單位 / 敵人表格由資料表生成，永不與 config 脫節 */
   buildHelp() {
     const unitRows = Object.values(UNIT_TYPES).map(d =>
-      `<tr><td>${d.emoji} ${d.name}</td><td>✨${d.cost}</td><td>${d.cooldown}s</td><td>${d.desc || ''}</td></tr>`
+      `<tr><td>${this.icon(`unit-${d.id}`, d.emoji)} ${d.name}</td><td>✨${d.cost}</td><td>${d.cooldown}s</td><td>${d.desc || ''}</td></tr>`
     ).join('');
     const enemyRows = Object.values(ENEMY_TYPES).map(d =>
-      `<tr><td>${d.emoji} ${d.name}</td><td>${d.hp}${d.armor ? ` +🛡️${d.armor}` : ''}</td><td>${d.desc || ''}</td></tr>`
+      `<tr><td>${this.icon(`enemy-${d.id}`, d.emoji)} ${d.name}</td><td>${d.hp}${d.armor ? ` +🛡️${d.armor}` : ''}</td><td>${d.desc || ''}</td></tr>`
     ).join('');
     document.getElementById('help-units').innerHTML =
       `<tr><th>單位</th><th>成本</th><th>冷卻</th><th>功能</th></tr>${unitRows}`;

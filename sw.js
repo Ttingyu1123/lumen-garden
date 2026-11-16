@@ -18,6 +18,8 @@ const ASSETS = [
   './js/progress.js',
   './js/sfx.js',
   './js/grid.js',
+  './js/sprites.js',
+  './js/scenery.js',
   './js/resources.js',
   './js/perks.js',
   './js/projectiles.js',
@@ -30,6 +32,13 @@ const ASSETS = [
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  // 角色圖：檔名須與 sprites.js 的推導規則一致；這裡列了不存在的檔會讓整個 SW 安裝失敗
+  ...[
+    'unit-bloom', 'unit-thorn', 'unit-frost', 'unit-blaze', 'unit-boulder', 'unit-lance', 'unit-mine',
+    'enemy-shambler', 'enemy-sprinter', 'enemy-flyer', 'enemy-brute', 'enemy-splitter',
+    'enemy-blobling', 'enemy-boss',
+    'rock', 'shovel', 'star', 'house',
+  ].map((name) => `./img/sprites/${name}.png`),
 ];
 
 self.addEventListener('install', (evt) => {

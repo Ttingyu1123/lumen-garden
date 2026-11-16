@@ -116,6 +116,7 @@ const Units = {
           u.timer += dt;
           if (u.timer >= u.def.fireInterval * G.perks.fireRateMult) {
             u.timer = 0;
+            u.shotAt = G.time;   // 供渲染做射擊後座動畫
             // 等級與增益加成套在投射物規格上（不動 def 原本資料）
             const base = u.def.projectile;
             const mult = this.damageMult(u) * G.perks.damageMult;
